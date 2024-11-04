@@ -13,15 +13,11 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "document_types")
-public class DocumentType {
+@Table(name = "purchases")
+public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @Column(name = "name", length = 15)
-    private String name;
-    @Column(name = "name", length = 5)
-    private String acronym;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -32,4 +28,8 @@ public class DocumentType {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_at")
     private Date updatedAt;
+
+    //TODO relations
 }
+
+
