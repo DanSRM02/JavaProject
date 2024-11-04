@@ -22,6 +22,8 @@ public class User {
     private String username;
     @Column(name = "password", length = 254)
     private String password;
+    @Column(name = "state", columnDefinition = "true")
+    private Boolean state;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
