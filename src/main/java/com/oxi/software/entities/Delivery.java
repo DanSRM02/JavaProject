@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -30,6 +31,17 @@ public class Delivery {
     private Date updatedAt;
 
     //TODO relations
+
+    @OneToOne(targetEntity = Order.class)
+    @JoinColumn(name = "order_id")
+    private Order order;
+
+    @OneToOne(targetEntity = User.class)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(targetEntity = Purchase.class, fetch = FetchType.EAGER)
+    private List<Purchase> purchases;
 }
 
 

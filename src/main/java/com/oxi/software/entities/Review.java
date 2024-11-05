@@ -32,4 +32,10 @@ public class Review {
     private Date updatedAt;
 
     //TODO relations
+
+    @ManyToOne(targetEntity = Product.class)
+    private Product product;
+
+    @ManyToOne(targetEntity = User.class)
+    private User user;
 }

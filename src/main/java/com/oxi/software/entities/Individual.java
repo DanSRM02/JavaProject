@@ -41,4 +41,13 @@ public class Individual {
     private Date updatedAt;
 
     //TODO relations
+
+    @OneToOne(targetEntity = IndividualType.class)
+    @JoinColumn(name = "individual_type_id")
+    private IndividualType individualType;
+
+    @OneToOne(targetEntity = DocumentType.class)
+    @JoinColumn(name = "document_type_id")
+    private DocumentType documentType;
+
 }

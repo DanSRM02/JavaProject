@@ -31,6 +31,10 @@ public class Purchase {
     private Date updatedAt;
 
     //TODO relations
+
+
+    @ManyToOne(targetEntity = Delivery.class)
+    private Delivery delivery;
 }
 
 
