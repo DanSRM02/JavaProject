@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -30,5 +31,9 @@ public class Unit {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_at")
     private Date updatedAt;
+
+
+    @OneToMany(targetEntity = Product.class, fetch = FetchType.LAZY)
+    private List<Product> products;
 }
 

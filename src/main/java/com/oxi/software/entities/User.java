@@ -1,11 +1,13 @@
 package com.oxi.software.entities;
 
 import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -36,4 +38,23 @@ public class User {
     private Date updatedAt;
 
     //TODO relations
+
+    @OneToOne(targetEntity = Individual.class)
+    @JoinColumn(name = "individual_id")
+    private Individual individual;
+
+    @OneToOne(targetEntity = RolType.class)
+    @JoinColumn(name = "rol_type_id")
+    private RolType rolType;
+
+
+
+    @OneToMany(targetEntity = Order.class, fetch = FetchType.LAZY)
+    private List<Order> orders;
+
+    @OneToMany(targetEntity = Review.class, fetch = FetchType.LAZY)
+    private List<Review> Reviews;
+
+
+
 }

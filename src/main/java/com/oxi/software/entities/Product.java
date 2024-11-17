@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -38,4 +39,10 @@ public class Product {
     private Date updatedAt;
 
     //TODO relations
+
+    @OneToMany(targetEntity = Review.class, fetch = FetchType.LAZY)
+    private List<Review> reviews;
+
+    @ManyToOne(targetEntity = Unit.class)
+    private Unit unit;
 }

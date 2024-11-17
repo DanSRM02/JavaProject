@@ -32,4 +32,11 @@ public class Order {
     private Date updatedAt;
 
     //TODO relations
+
+
+
+    @ManyToOne(targetEntity = User.class)
+    private User user;
+
+
 }
