@@ -14,10 +14,11 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "purchases")
+@Table(name = "deliveries")
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_delivery")
     private Long id;
 
     @CreationTimestamp
@@ -30,17 +31,17 @@ public class Delivery {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //TODO relations
+    //Relations
 
-    @OneToOne(targetEntity = Order.class)
-    @JoinColumn(name = "order_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order", nullable = false)
     private Order order;
 
-    @OneToOne(targetEntity = User.class)
-    @JoinColumn(name = "user_id")
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user", nullable = false)
     private User user;
 
-    @OneToMany(targetEntity = Purchase.class, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Purchase> purchases;
 }
 

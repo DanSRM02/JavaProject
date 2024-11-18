@@ -17,6 +17,7 @@ import java.util.Date;
 public class RolType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_rol_type")
     private Long id;
     @Column(name = "name", nullable = false, length = 55)
     private String name;
@@ -32,4 +33,8 @@ public class RolType {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_at")
     private Date updatedAt;
+
+    // We have to add the relation
+    @OneToOne(mappedBy = "rolType")
+    private User user;
 }

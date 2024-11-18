@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: project
+    name: oxi-project
   datasource:
     url: jdbc:postgresql://localhost:5432/project
     username: "postgres"

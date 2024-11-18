@@ -17,8 +17,9 @@ import java.util.Date;
 public class IndividualType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_individual_type")
     private Long id;
-    @Column(name = "name", nullable = false, length = 15)
+    @Column(name = "name_individual", nullable = false, length = 15)
     private String name;
 
     @CreationTimestamp
@@ -30,4 +31,7 @@ public class IndividualType {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_at")
     private Date updatedAt;
+
+    @OneToOne(mappedBy = "individualType")
+    private Individual individual;
 }

@@ -18,6 +18,7 @@ import java.util.List;
 public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_unit")
     private Long id;
     @Column(name = "unit_type", unique = true, nullable = false, length = 52)
     private String unitType;
@@ -32,8 +33,9 @@ public class Unit {
     @Column(name = "update_at")
     private Date updatedAt;
 
+    //relations / DONE
 
-    @OneToMany(targetEntity = Product.class, fetch = FetchType.LAZY)
-    private List<Product> products;
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Product> product;
 }
 
