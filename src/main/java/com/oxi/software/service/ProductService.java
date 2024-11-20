@@ -16,7 +16,7 @@ public class ProductService implements Idao<Product, Long> {
 
     @Override
     public Product getById(Long aLong) {
-        return this.productRepository.getById(aLong);
+        return this.productRepository.findById(aLong).orElse(null);  // Cambiado por findById
     }
 
     @Override
@@ -37,5 +37,18 @@ public class ProductService implements Idao<Product, Long> {
     @Override
     public List<Product> findAll() {
         return this.productRepository.findAll();
+    }
+
+    public Product createProduct(Product product) {
+
+        if (product.getPrice() <= 0) {
+            throw new IllegalArgumentException("El precio debe ser mayor que cero.");
+        }
+        if (product.getQuantity() < 0) {
+            throw new IllegalArgumentException("La cantidad no puede ser negativa.");
+        }
+
+        // Guarda el producto si todas las validaciones son correctas
+        return this.productRepository.save(product);
     }
 }
