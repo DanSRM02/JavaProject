@@ -17,10 +17,11 @@ import java.util.Date;
 public class DocumentType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_document_type")
     private Long id;
     @Column(name = "name", length = 15)
     private String name;
-    @Column(name = "name", length = 5)
+    @Column(name = "acronym", length = 5)
     private String acronym;
 
     @CreationTimestamp
@@ -32,4 +33,7 @@ public class DocumentType {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "update_at")
     private Date updatedAt;
+
+    @OneToOne(mappedBy = "documentType")
+    private Individual individual;
 }

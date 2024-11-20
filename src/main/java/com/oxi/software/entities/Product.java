@@ -18,15 +18,16 @@ import java.util.List;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_product")
     private Long id;
     @Column(name = "name", nullable = false, length = 25)
     private String name;
-    @Column(name = "quantity", nullable = false, columnDefinition = "0")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
     @Column(name = "state", nullable = false)
     private Boolean state;
-    @Column(name = "price", nullable = false,  columnDefinition = "0")
-    private Integer price; // Check the type of the data
+    @Column(name = "price", nullable = false)
+    private Integer price;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -38,11 +39,15 @@ public class Product {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //TODO relations
+    //relations / DONE
 
-    @OneToMany(targetEntity = Review.class, fetch = FetchType.LAZY)
-    private List<Review> reviews;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Review> review;
 
-    @ManyToOne(targetEntity = Unit.class)
+    @ManyToMany(mappedBy = "productList", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    private List<Order> orderList;
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinColumn (name = "fk_id_unit", nullable = false)
     private Unit unit;
 }

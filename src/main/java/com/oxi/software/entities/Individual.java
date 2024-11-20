@@ -17,8 +17,8 @@ import java.util.Date;
 public class Individual {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_individual")
     private Long id;
-
     @Column(name = "name", length = 100)
     private String name;
     @Column(name = "email", unique = true)
@@ -40,14 +40,16 @@ public class Individual {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //TODO relations
+    //relations
+    @OneToOne(mappedBy = "individual")
+    private User user;
 
-    @OneToOne(targetEntity = IndividualType.class)
-    @JoinColumn(name = "individual_type_id")
+    @OneToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "fk_id_individual_type")
     private IndividualType individualType;
 
-    @OneToOne(targetEntity = DocumentType.class)
-    @JoinColumn(name = "document_type_id")
+    @OneToOne(cascade = CascadeType.REFRESH)
+    @JoinColumn(name = "fk_id_document_type")
     private DocumentType documentType;
 
 }

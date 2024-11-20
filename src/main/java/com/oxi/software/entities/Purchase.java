@@ -17,6 +17,7 @@ import java.util.Date;
 public class Purchase {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_purchase")
     private Long id;
     private Integer total;
 
@@ -30,10 +31,10 @@ public class Purchase {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //TODO relations
+    // relations / DONE
 
-
-    @ManyToOne(targetEntity = Delivery.class)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
+    @JoinColumn (name = "fk_id_delivery")
     private Delivery delivery;
 }
 
