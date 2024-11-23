@@ -27,6 +27,7 @@ public class InventoryController {
             Product createdProduct = productService.createProduct(product);
             return new ResponseEntity<>(createdProduct, HttpStatus.CREATED); // Retorna el producto creado con código HTTP 201
         } catch (Exception e) {
+            System.out.println("Solicitud Incorrecta");
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Si hay un error, retorna 500
         }
     }
