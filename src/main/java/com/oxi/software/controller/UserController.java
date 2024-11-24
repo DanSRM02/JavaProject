@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/user",method = {RequestMethod.PUT,RequestMethod.GET,RequestMethod.DELETE, RequestMethod.POST})
+@RequestMapping(path = "/api/v1/oxi/user",
+        method = {
+        RequestMethod.PUT,
+                RequestMethod.GET,RequestMethod.DELETE, RequestMethod.POST})
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -25,12 +28,21 @@ public class UserController {
     @PostMapping(path = "/add")
     public ResponseEntity<Map<String, Object>> addUser(@RequestBody Map<String, Object> json) {
         try {
-            userBusiness.addUser(json);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost("Environment added successfully", HttpStatus.ACCEPTED), HttpStatus.OK);
+            userBusiness.add(json);
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
+                    ResponseHttpApi.CODE_OK,
+                    "User added successfully"),
+                    HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(),
+                    HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost("Error adding environment: " + e.getMessage(), HttpStatus.CONFLICT), HttpStatus.CONFLICT);
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error adding environment: " + e.getMessage(),
+                    HttpStatus.CONFLICT),
+                    HttpStatus.CONFLICT);
         }
     }
 }

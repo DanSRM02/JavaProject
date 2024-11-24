@@ -1,21 +1,24 @@
 package com.oxi.software.dto;
 
 import lombok.*;
+
 import java.util.Date;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class UserDTO {
+public class ProductDTO {
 
     private Long id;
-    private String username;
-    private String password;
+    private String name;
+    private Integer quantity;
+    private Boolean state;
+    private Integer price;
 
     private Date createdAt;
     private Date updatedAt;
 
-    //TODO add relations
+    private UnitDTO unit;
 
 }

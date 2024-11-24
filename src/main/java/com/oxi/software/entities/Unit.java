@@ -33,8 +33,6 @@ public class Unit {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //relations / DONE
-
     @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Product> product;
 }

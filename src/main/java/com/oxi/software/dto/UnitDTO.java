@@ -7,15 +7,11 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserDTO {
+public class UnitDTO {
 
     private Long id;
-    private String username;
-    private String password;
-
+    private String unitType;
     private Date createdAt;
     private Date updatedAt;
-
-    //TODO add relations
 
 }

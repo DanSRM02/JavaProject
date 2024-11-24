@@ -3,7 +3,9 @@ package com.oxi.software.service;
 import com.oxi.software.entities.Product;
 import com.oxi.software.repository.ProductRepository;
 import com.oxi.software.service.dao.Idao;
+import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,9 @@ public class ProductService implements Idao<Product, Long> {
     private ProductRepository productRepository;
 
     @Override
-    public Product getById(Long aLong) {
-        return this.productRepository.findById(aLong).orElse(null);  // Cambiado por findById
+    public Product getById(Long id) {
+        return this.productRepository.findById(id).orElseThrow(()-> // Cambiado por findById
+            new CustomException("Product with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override
@@ -37,18 +40,5 @@ public class ProductService implements Idao<Product, Long> {
     @Override
     public List<Product> findAll() {
         return this.productRepository.findAll();
-    }
-
-    public Product createProduct(Product product) {
-
-        if (product.getPrice() <= 0) {
-            throw new IllegalArgumentException("El precio debe ser mayor que cero.");
-        }
-        if (product.getQuantity() < 0) {
-            throw new IllegalArgumentException("La cantidad no puede ser negativa.");
-        }
-
-        // Guarda el producto si todas las validaciones son correctas
-        return this.productRepository.save(product);
     }
 }
