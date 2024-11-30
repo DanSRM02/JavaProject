@@ -6,10 +6,9 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UnitDTO {
+public class IndividualTypeDTO {
 
     private Long id;
-    private String unitType;
-    private String acronym;
+    private String name;
 
 }

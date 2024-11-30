@@ -17,8 +17,8 @@ public class ProductService implements Idao<Product, Long> {
     private ProductRepository productRepository;
 
     @Override
-    public Product getById(Long id) {
-        return this.productRepository.findById(id).orElseThrow(()-> // Cambiado por findById
+    public Product findBy(Long id) {
+        return this.productRepository.findById(id).orElseThrow(()->
             new CustomException("Product with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 

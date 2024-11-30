@@ -73,7 +73,7 @@ public class ProductBusiness {
 
     public ProductDTO findBy(Long id) {
         try{
-            Product productDTO = this.productService.getById(id);
+            Product productDTO = this.productService.findBy(id);
             return modelMapper.map(productDTO, ProductDTO.class);
         } catch (CustomException ce){
             logger.error(ce.getMessage());
@@ -89,7 +89,7 @@ public class ProductBusiness {
             //Build the product using annotation builder from DTO
             ProductDTO productDTO = validateData(request);
             Product product = modelMapper.map(productDTO, Product.class);
-            product.setUnit(unitService.getById(productDTO.getUnit().getId()));
+            product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
             this.productService.save(product);
         } catch (CustomException ce){
             logger.error(ce.getMessage());
@@ -109,7 +109,7 @@ public class ProductBusiness {
 
             //Search Product and save the product
             Product product = modelMapper.map(productDTO, Product.class);
-            product.setUnit(unitService.getById(productDTO.getUnit().getId()));
+            product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
             this.productService.save(product);
         } catch (CustomException ce){
             logger.error(ce.getMessage());
@@ -122,7 +122,7 @@ public class ProductBusiness {
     }
 
     private UnitDTO getUnitDto(Long id){
-        Unit unit = unitService.getById(id);
+        Unit unit = unitService.findBy(id);
         return modelMapper.map(unit, UnitDTO.class);
     }
 

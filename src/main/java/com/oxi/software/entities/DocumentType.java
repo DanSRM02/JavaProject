@@ -19,7 +19,7 @@ public class DocumentType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_document_type")
     private Long id;
-    @Column(name = "name", length = 15)
+    @Column(name = "name", length = 55)
     private String name;
     @Column(name = "acronym", length = 5)
     private String acronym;

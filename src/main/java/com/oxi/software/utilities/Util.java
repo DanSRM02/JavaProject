@@ -16,7 +16,7 @@ import java.util.Map;
 public class Util {
     private static final Logger logger = LogManager.getLogger(Util.class);
     public static JSONObject getData(Map<String, Object> json) throws JSONException {
-        logger.debug("Entering getData method");  // Log de inicio del método
+        logger.debug("Entering getData method");  // Log de inicio del method
         JSONObject jsonObject = null;
         try {
             // Log de los datos de entrada

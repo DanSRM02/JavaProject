@@ -18,28 +18,28 @@ public class UnitService implements Idao<Unit, Long> {
     private UnitRepository unitRepository;
 
     @Override
-    public Unit getById(Long id) {
+    public Unit findBy(Long id) {
         return this.unitRepository.findById(id).orElseThrow(()->
-                new CustomException("Product with id " + id + " not found", HttpStatus.NO_CONTENT));
+                new CustomException("Unit with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override
     public void save(Unit obje) {
-
+        this.unitRepository.save(obje);
     }
 
     @Override
     public void saveAll(Iterable<Unit> obje) {
-
+        this.unitRepository.saveAll(obje);
     }
 
     @Override
     public void delete(Unit obje) {
-
+        this.unitRepository.delete(obje);
     }
 
     @Override
     public List<Unit> findAll() {
-        return List.of();
+        return this.unitRepository.findAll();
     }
 }

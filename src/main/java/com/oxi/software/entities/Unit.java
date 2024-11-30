@@ -22,6 +22,8 @@ public class Unit {
     private Long id;
     @Column(name = "unit_type", unique = true, nullable = false, length = 52)
     private String unitType;
+    @Column(name = "acronym", nullable = false, length = 52)
+    private String acronym;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

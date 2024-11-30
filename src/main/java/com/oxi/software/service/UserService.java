@@ -17,28 +17,28 @@ public class UserService implements Idao<User, Long> {
     private UserRepository userRepository;
 
     @Override
-    public User getById(Long id) {
+    public User findBy(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
             new CustomException("User with id "+ id + " Not Found ", HttpStatus.NO_CONTENT));
     }
 
     @Override
     public void save(User obje) {
-
+        this.userRepository.save(obje);
     }
 
     @Override
     public void saveAll(Iterable<User> obje) {
-
+        this.userRepository.saveAll(obje);
     }
 
     @Override
     public void delete(User obje) {
-
+        this.userRepository.delete(obje);
     }
 
     @Override
     public List<User> findAll() {
-        return List.of();
+        return this.userRepository.findAll();
     }
 }

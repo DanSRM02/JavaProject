@@ -3,7 +3,9 @@ package com.oxi.software.service;
 import com.oxi.software.entities.Review;
 import com.oxi.software.repository.ReviewRepository;
 import com.oxi.software.service.dao.Idao;
+import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,9 @@ public class ReviewService implements Idao<Review, Long> {
     private ReviewRepository reviewRepository;
 
     @Override
-    public Review getById(Long aLong) {
-        return this.reviewRepository.getById(aLong);
+    public Review findBy(Long id) {
+        return this.reviewRepository.findById(id).orElseThrow(()->
+                new CustomException("Review with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override

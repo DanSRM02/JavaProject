@@ -3,7 +3,9 @@ package com.oxi.software.service;
 import com.oxi.software.entities.Order;
 import com.oxi.software.repository.OrderRepository;
 import com.oxi.software.service.dao.Idao;
+import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,9 @@ public class OrderService implements Idao<Order, Long> {
     private OrderRepository orderRepository;
 
     @Override
-    public Order getById(Long aLong) {
-        return this.orderRepository.getById(aLong);
+    public Order findBy(Long id) {
+        return this.orderRepository.findById(id).orElseThrow(()->
+                new CustomException("Order with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override

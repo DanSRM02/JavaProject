@@ -3,7 +3,9 @@ package com.oxi.software.service;
 import com.oxi.software.entities.Individual;
 import com.oxi.software.repository.IndividualRepository;
 import com.oxi.software.service.dao.Idao;
+import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +17,9 @@ public class IndividualService implements Idao<Individual, Long> {
     private IndividualRepository individualRepository;
 
     @Override
-    public Individual getById(Long aLong) {
-        return this.individualRepository.getById(aLong);
+    public Individual findBy(Long id) {
+        return this.individualRepository.findById(id).orElseThrow(()->
+                new CustomException("Individual with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override

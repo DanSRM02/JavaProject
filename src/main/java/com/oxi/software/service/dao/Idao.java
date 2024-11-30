@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Idao<T,ID>{
 
-    public T getById(ID id);
+    public T findBy(ID id);
     @Transactional
     public  void save(T obje);
 

@@ -2,7 +2,6 @@ package com.oxi.software.dto;
 
 import lombok.*;
 
-import java.util.Date;
 
 @Data
 @Builder
@@ -15,9 +14,6 @@ public class ProductDTO {
     private Integer quantity;
     private Boolean state;
     private Integer price;
-
-    private Date createdAt;
-    private Date updatedAt;
 
     private UnitDTO unit;
 
