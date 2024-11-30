@@ -4,6 +4,7 @@ import com.oxi.software.business.IndividualBusiness;
 import com.oxi.software.dto.IndividualDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class IndividualController {
 
     private final IndividualBusiness individualBusiness;
 
+    @Autowired
     public IndividualController(IndividualBusiness individualBusiness) {
         this.individualBusiness = individualBusiness;
     }
@@ -113,5 +115,4 @@ public class IndividualController {
                     HttpStatus.CONFLICT);
         }
     }
-
 }

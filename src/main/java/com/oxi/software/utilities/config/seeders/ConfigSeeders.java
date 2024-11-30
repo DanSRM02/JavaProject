@@ -2,9 +2,11 @@ package com.oxi.software.utilities.config.seeders;
 
 import com.oxi.software.entities.DocumentType;
 import com.oxi.software.entities.IndividualType;
+import com.oxi.software.entities.RolType;
 import com.oxi.software.entities.Unit;
 import com.oxi.software.repository.DocumentTypeRepository;
 import com.oxi.software.repository.IndividualTypeRepository;
+import com.oxi.software.repository.RolTypeRepository;
 import com.oxi.software.repository.UnitRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -19,11 +21,13 @@ public class ConfigSeeders implements CommandLineRunner {
     private final DocumentTypeRepository documentTypeRepository;
     private final UnitRepository unitRepository;
     private final IndividualTypeRepository individualTypeRepository;
+    private final RolTypeRepository rolTypeRepository;
 
-    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository ,UnitRepository unitRepository ) {
+    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository) {
         this.documentTypeRepository = documentTypeRepository;
         this.individualTypeRepository = individualTypeRepository;
         this.unitRepository = unitRepository;
+        this.rolTypeRepository = rolTypeRepository;
     }
 
     @Override
@@ -37,6 +41,9 @@ public class ConfigSeeders implements CommandLineRunner {
         }
         if (individualTypeRepository.count() == 0) {
             individualTypeRepository.saveAll(getAllIndividualType());
+        }
+        if (rolTypeRepository.count() == 0){
+            rolTypeRepository.saveAll(getRole());
         }
     }
 
@@ -95,7 +102,7 @@ public class ConfigSeeders implements CommandLineRunner {
         return  unitList;
     }
 
-    // Seeder for
+    // Seeder for Individual Types
 
     private List<IndividualType> getAllIndividualType() {
 
@@ -139,100 +146,36 @@ public class ConfigSeeders implements CommandLineRunner {
 //        permissionEntityList.add(read);
 //        return permissionEntityList;
 //    }
-//    // seeder roles
-//    private  List<Role> getRole() {
-//
-//        List<PermissionEntity> rolesPermisos = this.getPermisos();
-//
-//
-//
-//        Role superAdmin = Role.builder()
-//                .id(1L)
-//                .name("SUPER ADMIN")
-//                .description("can create, read and disable information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisos)
-//                .build();
-//
-//        Role admin = Role.builder()
-//                .id(2L)
-//                .name("ADMIN")
-//                .description("can create, read and disable information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisos)
-//                .build();
-//        //  List<String> permisosPermitidosCordinator = Arrays.asList("CREATE", "READ", "UPDATE");
+
+    // Seeder for Rol
+    private  List<RolType> getRole() {
+        RolType vendedor = RolType.builder()
+                .name("Vendedor")
+                .description("Vendedor")
+                .build();
+
+        RolType usuario = RolType.builder()
+                .name("Usuario")
+                .description("Usuario")
+                .build();
+
+        RolType domiciliario = RolType.builder()
+                .name("Domiciliario")
+                .description("Domiciliario")
+                .build();
+
+//      List<PermissionEntity> rolesPermisos = this.getPermisos();
+//        List<String> permisosPermitidosCordinator = Arrays.asList("CREATE", "READ", "UPDATE");
 //        List<PermissionEntity> rolesPermisosCordinator = rolesPermisos.stream()
 //                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE")|| permissionEntity.getName().equals("UPDATE")|| permissionEntity.getName().equals("READ"))
 //                .collect(Collectors.toList());
-//        Role coordinator = Role.builder()
-//                .id(3L)
-//                .name("COORDINADOR")
-//                .description("can create, read and edit information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisosCordinator)
-//                .build();
-//        // List<String> permisosPermitidosInstructor = Arrays.asList("CREATE", "READ", "UPDATE");
-//        List<PermissionEntity> rolesPermisosInstructor = rolesPermisos.stream()
-//                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE")|| permissionEntity.getName().equals("UPDATE")|| permissionEntity.getName().equals("READ"))
-//                .collect(Collectors.toList());
-//        Role instructor = Role.builder()
-//                .id(4L)
-//                .name("INSTRUCTOR")
-//                .description("can create, read and edit information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisosInstructor)
-//                .build();
-//        // List<String> permisosPermitidosAprendiz = Arrays.asList("CREATE", "READ", "UPDATE");
-//        List<PermissionEntity> rolesPermisosAprendiz = rolesPermisos.stream()
-//                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE") || permissionEntity.getName().equals("UPDATE") || permissionEntity.getName().equals("READ"))
-//                .collect(Collectors.toList());
-//        Role aprendiz = Role.builder()
-//                .id(5L)
-//                .name("APRENDIZ")
-//                .description("can create, read and edit information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisosInstructor)
-//                .build();
-//        // List<String> permisosPermitidosSeguridad = Arrays.asList("CREATE", "READ", "UPDATE");
-//        List<PermissionEntity> rolesPermisosSeguridad = rolesPermisos.stream()
-//                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE") || permissionEntity.getName().equals("UPDATE") || permissionEntity.getName().equals("READ"))
-//                .collect(Collectors.toList());
-//        Role seguridad = Role.builder()
-//                .id(6L)
-//                .name("SEGURIDAD")
-//                .description("can create, read and disable information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisosInstructor)
-//                .build();
-//        // List<String> permisosPermitidosInvitados = Arrays.asList("CREATE", "READ", "UPDATE");
-//        List<PermissionEntity> rolesPermisosInvitados = rolesPermisos.stream()
-//                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE") || permissionEntity.getName().equals("UPDATE") || permissionEntity.getName().equals("READ"))
-//                .collect(Collectors.toList());
-//        Role invitado = Role.builder()
-//                .id(7L)
-//                .name("INVITADO")
-//                .description("can create, read and disable information of the system")
-//                .createdAt(new Date())
-//                .state(Boolean.TRUE)
-//                .permissions(rolesPermisosInstructor)
-//                .build();
-//        List<Role> roleList = new ArrayList<>();
-//        roleList.add(superAdmin);
-//        roleList.add(admin);
-//        roleList.add(coordinator);
-//        roleList.add(instructor);
-//        roleList.add(aprendiz);
-//        roleList.add(seguridad);
-//        roleList.add(invitado);
-//        return roleList;
-//    }
+
+        List<RolType> roleList = new ArrayList<>();
+        roleList.add(vendedor);
+        roleList.add(usuario);
+        roleList.add(domiciliario);
+        return roleList;
+    }
 
 
 }

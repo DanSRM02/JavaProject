@@ -1,5 +1,6 @@
 package com.oxi.software.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.*;
 
 @Data
@@ -11,7 +12,7 @@ public class UserDTO {
     private Long id;
     private String username;
     private String password;
-
-    //TODO add relations
-
+    private Boolean state;
+    private IndividualDTO individual;
+    private RolTypeDTO rolType;
 }

@@ -33,11 +33,11 @@ public class Delivery {
 
     //Relations
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order", nullable = false)
     private Order order;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user", nullable = false)
     private User user;
 

@@ -12,9 +12,9 @@ import java.util.List;
 
 @Service
 public class PurchaseService implements Idao<Purchase, Long> {
+
     @Autowired
     private PurchaseRepository purchaseRepository;
-
 
     @Override
     public Purchase findBy(Long id) {
