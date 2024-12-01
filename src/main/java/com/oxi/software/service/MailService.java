@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.File;
 import java.util.Map;
 
 @Service
@@ -31,10 +32,23 @@ public class MailService {
         // Crear y enviar el correo
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+        // Set email fields
         helper.setTo(mailDTO.getTo());
         helper.setSubject(mailDTO.getSubject());
         helper.setText(htmlContent, true);
 
+        // Verificar si hay un archivo PDF adjunto
+        if (mailDTO.getAttachment() != null) {
+            File pdfFile = new File(mailDTO.getAttachment());
+            if (pdfFile.exists()) {
+                helper.addAttachment("OrderDetails.pdf", pdfFile);
+            } else {
+                throw new RuntimeException("PDF file not found: " + mailDTO.getAttachment());
+            }
+        }
+
+        // Enviar el correo
         mailSender.send(mimeMessage);
     }
 }

@@ -10,7 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MailDTO {
+
     private String to;
     private String subject;
     private String body;
+    private String attachment;
+
 }

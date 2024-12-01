@@ -1,8 +1,8 @@
 package com.oxi.software.business;
 
 
+import com.oxi.software.controller.PdfService;
 import com.oxi.software.dto.*;
-import com.oxi.software.entities.Delivery;
 import com.oxi.software.entities.Order;
 import com.oxi.software.entities.User;
 import com.oxi.software.service.MailService;
@@ -21,6 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,16 +35,18 @@ public class OrderBusiness {
     private final OrderService orderService;
     private final UserService userService;
     private final MailService mailService;
+    private final PdfService pdfService;
 
     private static final Logger logger = LogManager.getLogger(Util.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final ProductService productService;
 
     @Autowired
-    public OrderBusiness(OrderService orderService, UserService userService, MailService mailService, ProductService productService) {
+    public OrderBusiness(OrderService orderService, UserService userService, MailService mailService, PdfService pdfService, ProductService productService) {
         this.orderService = orderService;
         this.userService = userService;
         this.mailService = mailService;
+        this.pdfService = pdfService;
         this.productService = productService;
     }
 
@@ -81,14 +85,29 @@ public class OrderBusiness {
         return orderDTO;
     }
 
+    public PdfOrderDTO createPdfOrderDTO(OrderDTO orderDTO, int totalAmount) {
+
+        if (orderDTO.getProductList() == null || orderDTO.getProductList().isEmpty()) {
+            throw new CustomException("Product list is empty for order ID: " + orderDTO.getId(), HttpStatus.BAD_REQUEST);
+        }
+
+        return PdfOrderDTO.builder()
+                .id(orderDTO.getId())
+                .customerName(orderDTO.getUser().getIndividual().getName())
+                .customerEmail(orderDTO.getUser().getIndividual().getEmail())
+                .customerAddress(orderDTO.getUser().getIndividual().getAddress())
+                .productList(orderDTO.getProductList())
+                .totalAmount(totalAmount)
+                .orderDate(orderDTO.getCreatedAt().toString())
+                .build();
+    }
+
     public void sendEmail(Long idOrder) {
         try {
-            // Buscar la orden
             OrderDTO order = this.findBy(idOrder);
             if (order == null) {
                 throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
             }
-
             // Validar que el cliente tenga un correo asociado
             String customerEmail = order.getUser().getIndividual().getEmail();
             if (customerEmail == null || customerEmail.isEmpty()) {
@@ -98,21 +117,35 @@ public class OrderBusiness {
             // Calcular el total de la orden
             int total = calculateTotal(order.getProductList());
 
+            // Crear el PdfOrderDTO
+            PdfOrderDTO pdfOrderDTO = createPdfOrderDTO(order, total);
+
+            // Generar el PDF con PdfOrderDTO
+            String pdfFilePath = pdfService.generateOrderPdf(pdfOrderDTO);
+
+            // Verificar si el archivo PDF fue creado exitosamente
+            File pdfFile = new File(pdfFilePath);
+            if (!pdfFile.exists()) {
+                throw new RuntimeException("Failed to generate PDF file: " + pdfFilePath);
+            }
+
             // Crear las variables para Thymeleaf
             Map<String, Object> templateVariables = new HashMap<>();
             templateVariables.put("order", order);
-            templateVariables.put("total", total);  // Agregar el total a las variables
+            templateVariables.put("total", total);
+            templateVariables.put("pdfPath", pdfFilePath);
 
-            // Configurar los detalles del correo
+            // Configurar los detalles del correo (incluyendo el PDF como adjunto)
             MailDTO mailDTO = MailDTO.builder()
                     .to(customerEmail)
                     .subject("Your Order Details - Order #" + order.getId())
+                    .attachment(pdfFilePath)  // Adjuntar el PDF
                     .build();
 
             // Log de información del envío
             logger.info("Sending email to customer: {}", customerEmail);
 
-            // Enviar el correo
+            // Enviar el correo con las variables de la plantilla
             mailService.sendEmailWithTemplate(mailDTO, templateVariables);
 
             // Log de éxito
@@ -120,7 +153,7 @@ public class OrderBusiness {
 
         } catch (CustomException e) {
             logger.error("Custom exception occurred: {}", e.getMessage());
-            throw e; // Relanzar la excepción personalizada
+            throw e;
         } catch (Exception e) {
             logger.error("Unexpected error occurred while sending email for order ID: {}", idOrder, e);
             throw new RuntimeException("Error occurred while sending email", e);
@@ -226,4 +259,6 @@ public class OrderBusiness {
                 .mapToInt(product -> product.getQuantity() * product.getPrice())
                 .sum();
     }
+
+
 }
