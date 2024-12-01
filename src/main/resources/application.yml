@@ -15,9 +15,9 @@ spring:
     level:
       root: INFO
       com.oxi: DEBUG
-  jpa:
-    hibernate:
-      ddl-auto: update
+jpa:
+  hibernate:
+    ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
