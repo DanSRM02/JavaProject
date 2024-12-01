@@ -115,5 +115,19 @@ public class ProductController {
                     HttpStatus.CONFLICT);
         }
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Map<String, Object>> deleteProductById(@PathVariable Long id) {
+        try{
+            productBusiness.delete(id);
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
+                    ResponseHttpApi.CODE_BAD,
+                    "There isn't that product"
+            ), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new CustomException("Error getting Product: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
+        }
+    }
 }
 

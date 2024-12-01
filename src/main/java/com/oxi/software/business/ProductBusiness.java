@@ -71,6 +71,32 @@ public class ProductBusiness {
         }
     }
 
+    public void delete(Long id) throws CustomException {
+        try {
+            // Verificar si el producto existe en la base de datos
+            Product product = productService.findBy(id);
+            if (product == null) {
+                throw new CustomException("Product not found with ID: " + id, HttpStatus.NOT_FOUND);
+            }
+
+            // Eliminar el producto
+            productService.delete(product);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Product deleted successfully with ID: {}", id);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error occurred while deleting product: {}", ce.getMessage(), ce);
+            throw ce;  // Relanzar la excepción personalizada
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while deleting product", e);
+            throw new RuntimeException("Unexpected error occurred while deleting product", e);
+        }
+    }
+
     public ProductDTO findBy(Long id) {
         try{
             Product productDTO = this.productService.findBy(id);
@@ -138,6 +164,8 @@ public class ProductBusiness {
             throw new RuntimeException("Unexpected error occurred while updating product", e);
         }
     }
+
+
 
     private UnitDTO getUnitDto(Long id){
         Unit unit = unitService.findBy(id);
