@@ -19,6 +19,8 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_review")
     private Long id;
+    @Column(name = "title", nullable = false,  length = 254)
+    private String title;
     @Column(name = "message", nullable = false,  length = 254)
     private String message;
 

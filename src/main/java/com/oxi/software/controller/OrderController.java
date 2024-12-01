@@ -27,41 +27,45 @@ public class OrderController {
     @PostMapping(path = "/add")
     public ResponseEntity<Map<String, Object>> addOrder(@RequestBody Map<String, Object> json) {
         try {
+            // Call Business to add Order
             orderBusiness.add(json);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Order added successfully"),
+
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Order added successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error adding Order" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error adding order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping(path = "/update/{id}")
-    public ResponseEntity<Map<String, Object>> addOrder(@RequestBody Map<String, Object> json, @PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> updateOrder(@RequestBody Map<String, Object> json, @PathVariable Long id) {
         try {
+            // Call Business to update Order
             orderBusiness.update(json, id);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Order modified successfully"),
+
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Order modified successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error modified order" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error modifying order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }

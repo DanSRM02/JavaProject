@@ -85,40 +85,58 @@ public class ProductBusiness {
     }
 
     public void add(Map<String, Object> request) {
-        try{
-            //Build the product using annotation builder from DTO
+        try {
+            // Validar datos y convertir a DTO
             ProductDTO productDTO = validateData(request);
+
+            // Crear la entidad Product y asignar propiedades
             Product product = modelMapper.map(productDTO, Product.class);
             product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
-            this.productService.save(product);
-        } catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw new CustomException("Error add product", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException();
-        }
 
+            // Guardar el producto
+            this.productService.save(product);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Product added successfully: {}", product);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error adding product", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding product", e);
+            throw new RuntimeException("Unexpected error occurred while adding product", e);
+        }
     }
 
     public void update(Map<String, Object> request, Long id) {
-        try{
-            //Validate Data to DTO
+        try {
+            // Validar datos y convertir a DTO
             ProductDTO productDTO = validateData(request);
-            productDTO.setId(id);
+            productDTO.setId(id);  // Establecer el ID del producto a actualizar
 
-            //Search Product and save the product
+            // Crear la entidad Product y asignar propiedades
             Product product = modelMapper.map(productDTO, Product.class);
             product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
-            this.productService.save(product);
-        } catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw new CustomException("Error add product", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException();
-        }
 
+            // Guardar el producto actualizado
+            this.productService.save(product);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Product updated successfully: {}", product);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error updating product", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating product", e);
+            throw new RuntimeException("Unexpected error occurred while updating product", e);
+        }
     }
 
     private UnitDTO getUnitDto(Long id){

@@ -71,38 +71,60 @@ public class UserBusiness {
 
     public void add(Map<String, Object> json) {
         try {
+            // Validar datos y convertir a DTO
             UserDTO userDTO = validateData(json);
+
+            // Crear la entidad User y asignar propiedades
             User user = modelMapper.map(userDTO, User.class);
-            //Assign Foreign Keys - Role Type
+
+            // Asignar claves foráneas
             user.setRolType(rolTypeService.findBy(userDTO.getRolType().getId()));
-            //Individual Type
             user.setIndividual(individualService.findBy(userDTO.getIndividual().getId()));
+
+            // Guardar usuario
             this.userService.save(user);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to create user",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log información sobre la operación exitosa
+            logger.info("User added successfully: {}", user);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to create user", ce.getStatus());
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding user", e);
+            throw new RuntimeException("Unexpected error occurred while adding user", e);
         }
     }
 
     public void update(Map<String, Object> json, Long id) {
         try {
+            // Validar datos y convertir a DTO
             UserDTO userDTO = validateData(json);
-            userDTO.setId(id);
+            userDTO.setId(id);  // Establecer el ID del usuario a actualizar
+
+            // Crear la entidad User y asignar propiedades
             User user = modelMapper.map(userDTO, User.class);
-            //Assign Foreign Keys - Role Type
+
+            // Asignar claves foráneas
             user.setRolType(rolTypeService.findBy(userDTO.getRolType().getId()));
-            //Individual Type
             user.setIndividual(individualService.findBy(userDTO.getIndividual().getId()));
+
+            // Guardar usuario modificado
             this.userService.save(user);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to modified user",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log información sobre la operación exitosa
+            logger.info("User updated successfully: {}", user);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to modify user", ce.getStatus());
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating user", e);
+            throw new RuntimeException("Unexpected error occurred while updating user", e);
         }
     }
 

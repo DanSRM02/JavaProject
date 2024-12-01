@@ -25,47 +25,46 @@ public class IndividualController {
         this.individualBusiness = individualBusiness;
     }
 
-    // Endpoint Add individual
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createIndividual(@RequestBody Map<String, Object> productMap) {
         try {
             // Call Business to create individual
             individualBusiness.add(productMap);
-            // Debug for errors
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Add Individual successfully"),
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Add Individual successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error adding Individual" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error adding Individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> updateIndividual(@RequestBody Map<String, Object> productMap, @PathVariable Long id) {
-        try{
+        try {
+            // Call Business to update individual
             individualBusiness.update(productMap, id);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Update product successfully"),
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Update Individual successfully", HttpStatus.OK),
                     HttpStatus.OK);
-        }catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error updated product" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error updating Individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }

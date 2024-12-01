@@ -82,35 +82,56 @@ public class OrderBusiness {
 
     public void add(Map<String, Object> json) {
         try {
+            // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
+
+            // Crear la entidad Order y asignar propiedades
             Order order = modelMapper.map(orderDTO, Order.class);
-            //Assign Foreign Key - User
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
+
+            // Guardar la orden
             this.orderService.save(order);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to create order",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log de información sobre la operación exitosa
+            logger.info("Order added successfully: {}", order);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to create order", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding order", e);
+            throw new RuntimeException("Unexpected error occurred while adding order", e);
         }
     }
 
     public void update(Map<String, Object> json, Long id) {
         try {
+            // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
-            orderDTO.setId(id);
+            orderDTO.setId(id);  // Establecer el ID de la orden a actualizar
 
+            // Crear la entidad Order y asignar propiedades
             Order order = modelMapper.map(orderDTO, Order.class);
-            //Assign Foreign Key - User
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
+
+            // Guardar la orden actualizada
             this.orderService.save(order);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to modified user",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log de información sobre la operación exitosa
+            logger.info("Order updated successfully: {}", order);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to modify order", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating order", e);
+            throw new RuntimeException("Unexpected error occurred while updating order", e);
         }
     }
 

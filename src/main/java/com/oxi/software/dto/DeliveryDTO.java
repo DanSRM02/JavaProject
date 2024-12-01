@@ -10,7 +10,7 @@ public class DeliveryDTO {
 
     private Long id;
     private OrderDTO order;
-    private UserDTO user;
+    private UserDTO domiciliary ;
 
 }
 

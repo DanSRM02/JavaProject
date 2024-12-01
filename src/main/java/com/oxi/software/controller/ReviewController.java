@@ -1,7 +1,7 @@
 package com.oxi.software.controller;
 
-import com.oxi.software.business.DeliveryBusiness;
-import com.oxi.software.dto.DeliveryDTO;
+import com.oxi.software.business.ReviewBusiness;
+import com.oxi.software.dto.ReviewDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,107 +13,109 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/delivery", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
+@RequestMapping(path = "/api/v1/oxi/review", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 @CrossOrigin(origins = "*")
-public class DeliveryController {
+public class ReviewController {
 
-    private final DeliveryBusiness deliveryBusiness;
+    private final ReviewBusiness reviewBusiness;
 
     @Autowired
-    public DeliveryController(DeliveryBusiness deliveryBusiness) {
-        this.deliveryBusiness = deliveryBusiness;
+    public ReviewController(ReviewBusiness reviewBusiness) {
+        this.reviewBusiness = reviewBusiness;
     }
 
+    // Crear nueva reseña
     @PostMapping("/add")
-    public ResponseEntity<Map<String, Object>> createDelivery(@RequestBody Map<String, Object> productMap) {
+    public ResponseEntity<Map<String, Object>> createReview(@RequestBody Map<String, Object> reviewMap) {
         try {
-            // Call Business to create delivery
-            deliveryBusiness.add(productMap);
-
-            // Success response
+            // Llamar al negocio para crear la reseña
+            reviewBusiness.add(reviewMap);
+            // Respuesta de éxito
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Add Delivery successfully", HttpStatus.OK),
+                    "Review added successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
+            // Respuesta para excepciones personalizadas
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
+            // Respuesta para excepciones generales
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error adding Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    "Error adding review: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
+    // Actualizar reseña
     @PutMapping("/update/{id}")
-    public ResponseEntity<Map<String, Object>> updateDelivery(@RequestBody Map<String, Object> productMap, @PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> updateReview(@RequestBody Map<String, Object> reviewMap, @PathVariable Long id) {
         try {
-            // Call Business to update delivery
-            deliveryBusiness.update(productMap, id);
-
-            // Success response
+            // Llamar al negocio para actualizar la reseña
+            reviewBusiness.update(reviewMap, id);
+            // Respuesta de éxito
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Update Delivery successfully", HttpStatus.OK),
+                    "Review updated successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
+            // Respuesta para excepciones personalizadas
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
+            // Respuesta para excepciones generales
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error updating Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    "Error updating review: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
+    // Obtener todas las reseñas
     @GetMapping("/all")
-    public ResponseEntity<Map<String, Object>> getAllDeliverys() {
+    public ResponseEntity<Map<String, Object>> getAllReviews() {
         try{
-            List<DeliveryDTO> deliveryDTOSList = deliveryBusiness.findAll();
-            if (!deliveryDTOSList.isEmpty()) {
+            List<ReviewDTO> reviewDTOList = reviewBusiness.findAll();
+            if (!reviewDTOList.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        deliveryDTOSList,
+                        reviewDTOList,
                         HttpStatus.OK,
                         "Successfully Completed",
-                        deliveryDTOSList.size()),
+                        reviewDTOList.size()),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         null,
                         HttpStatus.NO_CONTENT,
-                        "Deliverys not found",
+                        "Reviews not found",
                         0),
                         HttpStatus.ACCEPTED);
             }
-        }catch (Exception e){
-            throw new CustomException("Error getting deliverys: " + e.getMessage(),
+        } catch (Exception e) {
+            throw new CustomException("Error getting Reviews: " + e.getMessage(),
                     HttpStatus.CONFLICT);
         }
     }
 
+    // Obtener reseña por ID
     @GetMapping("/find/{id}")
-    public ResponseEntity<Map<String, Object>> getDeliveryById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getReviewById(@PathVariable Long id) {
         try{
-            DeliveryDTO deliveryDTO = deliveryBusiness.findBy(id);
-            if (deliveryDTO != null) {
+            ReviewDTO reviewDTO = reviewBusiness.findBy(id);
+            if (reviewDTO != null) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(
-                        deliveryDTO,
+                        reviewDTO,
                         ResponseHttpApi.CODE_OK,
                         "Successfully Completed"
                 ), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
                     ResponseHttpApi.CODE_BAD,
-                    "There isn't delivery"
+                    "There isn't that review"
             ), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            throw new CustomException("Error getting delivery: " + e.getMessage(),
+            throw new CustomException("Error getting Review: " + e.getMessage(),
                     HttpStatus.CONFLICT);
         }
     }
-
 }
+

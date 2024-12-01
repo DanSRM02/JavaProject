@@ -53,7 +53,7 @@ public class DeliveryBusiness {
         //Search user and assign to DTO
         Long userId = Long.parseLong(request.get("user_id").toString());
         UserDTO userDTO = getUserDTO(userId);
-        deliveryDTO.setUser(userDTO);
+        deliveryDTO.setDomiciliary(userDTO);
 
         //Search delivery type and assign to DTO
         Long orderId = Long.parseLong(request.get("order_id").toString());
@@ -96,16 +96,15 @@ public class DeliveryBusiness {
 
     public void add(Map<String, Object> request) {
         try {
-            // Validar datos
+            // Validar datos y convertir a DTO
             DeliveryDTO deliveryDTO = validateData(request);
             Delivery delivery = new Delivery();
 
             // Manejar User manualmente
-            User user = userService.findBy(deliveryDTO.getUser().getId());
+            User user = userService.findBy(deliveryDTO.getDomiciliary().getId());
             if (user == null) {
                 throw new CustomException("User not found", HttpStatus.NOT_FOUND);
             }
-
 
             if (user.getIndividual() == null) {
                 throw new CustomException("Individual field cannot be null", HttpStatus.BAD_REQUEST);
@@ -122,25 +121,33 @@ public class DeliveryBusiness {
 
             // Guardar entrega
             deliveryService.save(delivery);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Delivery added successfully: {}", delivery);
+
         } catch (CustomException ce) {
-            logger.error(ce.getMessage(), ce);
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
             throw new CustomException("Error adding delivery: " + ce.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            throw new RuntimeException("Unexpected error occurred while adding delivery");
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding delivery", e);
+            throw new RuntimeException("Unexpected error occurred while adding delivery", e);
         }
     }
 
     public void update(Map<String, Object> request, Long id) {
-        try{
-            //Validate Data to DTO
+        try {
+            // Validar datos y convertir a DTO
             DeliveryDTO deliveryDTO = validateData(request);
             Delivery delivery = new Delivery();
 
+            // Establecer el ID de la entrega a actualizar
             delivery.setId(id);
 
             // Manejar User manualmente
-            User user = userService.findBy(deliveryDTO.getUser().getId());
+            User user = userService.findBy(deliveryDTO.getDomiciliary().getId());
             if (user == null) {
                 throw new CustomException("User not found", HttpStatus.NOT_FOUND);
             }
@@ -154,13 +161,21 @@ public class DeliveryBusiness {
             }
             delivery.setOrder(order);
 
+            // Guardar la entrega actualizada
             this.deliveryService.save(delivery);
-        } catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw new CustomException("Error add product", HttpStatus.INTERNAL_SERVER_ERROR);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Delivery updated successfully: {}", delivery);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error updating delivery", HttpStatus.INTERNAL_SERVER_ERROR);
+
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating delivery", e);
+            throw new RuntimeException("Unexpected error occurred while updating delivery", e);
         }
     }
 

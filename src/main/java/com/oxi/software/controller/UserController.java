@@ -26,20 +26,21 @@ public class UserController {
     @PostMapping(path = "/add")
     public ResponseEntity<Map<String, Object>> addUser(@RequestBody Map<String, Object> json) {
         try {
+            // Call Business to add User
             userBusiness.add(json);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "User added successfully"),
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "User added successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error adding Product" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error adding user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -47,20 +48,21 @@ public class UserController {
     @PutMapping(path = "/update/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@RequestBody Map<String, Object> json, @PathVariable Long id) {
         try {
+            // Call Business to update User
             userBusiness.update(json, id);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "User modified successfully"),
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "User modified successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error modified user" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error modifying user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
