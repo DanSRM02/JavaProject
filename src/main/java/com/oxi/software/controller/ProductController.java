@@ -118,15 +118,26 @@ public class ProductController {
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Map<String, Object>> deleteProductById(@PathVariable Long id) {
-        try{
+        try {
+            // Intentar eliminar el producto
             productBusiness.delete(id);
+
+            // Si el producto no se encuentra, lanzamos una excepción para indicar que no fue encontrado
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
+                    ResponseHttpApi.CODE_OK,
+                    "Product deleted successfully"
+            ), HttpStatus.NO_CONTENT); // Devolver 204 No Content si se eliminó exitosamente
+
+        } catch (CustomException ex) {
+            // Si no se encuentra el producto, manejamos la excepción personalizada
             return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
                     ResponseHttpApi.CODE_BAD,
-                    "There isn't that product"
-            ), HttpStatus.BAD_REQUEST);
+                    "Product not found with ID: " + id
+            ), HttpStatus.NOT_FOUND); // Devolver 404 si no se encontró el producto
+
         } catch (Exception e) {
-            throw new CustomException("Error getting Product: " + e.getMessage(),
-                    HttpStatus.CONFLICT);
+            // Manejo de otros errores inesperados
+            throw new CustomException("Error deleting Product: " + e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 }
