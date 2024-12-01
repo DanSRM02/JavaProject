@@ -2,6 +2,7 @@ package com.oxi.software.dto;
 
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -14,6 +15,7 @@ public class OrderDTO {
     private Boolean state;
     private UserDTO user;
     private List<ProductDTO> productList;
+    private Date createdAt;
 
 }
 
