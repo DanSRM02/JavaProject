@@ -1,6 +1,7 @@
 package com.oxi.software.controller;
 
 import com.oxi.software.business.UserBusiness;
+import com.oxi.software.dto.IndividualDTO;
 import com.oxi.software.dto.UserDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -64,6 +66,31 @@ public class UserController {
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error modifying user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<Map<String, Object>> getAllUsers() {
+        try{
+            List<UserDTO> userDTOSList = userBusiness.findAll();
+            if (!userDTOSList.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        userDTOSList,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        userDTOSList.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Individuals not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
+        }catch (Exception e){
+            throw new CustomException("Error getting individuals: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
         }
     }
 

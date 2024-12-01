@@ -1,7 +1,6 @@
 package com.oxi.software.controller;
 
 import com.oxi.software.business.OrderBusiness;
-import com.oxi.software.dto.DeliveryDTO;
 import com.oxi.software.dto.OrderDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
@@ -43,6 +42,28 @@ public class OrderController {
             // General exception response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error adding order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping(path = "/send-email/{id-order}")
+    public ResponseEntity<Map<String, Object>> sendEmail(@PathVariable("id-order") Long idOrder) {
+        try {
+            // Call Business to update Order
+            orderBusiness.sendEmail(idOrder);
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Order send to email successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error sending order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
@@ -92,7 +113,7 @@ public class OrderController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Map<String, Object>> getAllDeliverys() {
+    public ResponseEntity<Map<String, Object>> getAllOrders() {
         try{
             List<OrderDTO> orderDTOList = orderBusiness.findAll();
             if (!orderDTOList.isEmpty()) {
@@ -106,12 +127,12 @@ public class OrderController {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         null,
                         HttpStatus.NO_CONTENT,
-                        "Deliverys not found",
+                        "Orders not found",
                         0),
                         HttpStatus.ACCEPTED);
             }
         }catch (Exception e){
-            throw new CustomException("Error getting deliverys: " + e.getMessage(),
+            throw new CustomException("Error getting orders: " + e.getMessage(),
                     HttpStatus.CONFLICT);
         }
     }

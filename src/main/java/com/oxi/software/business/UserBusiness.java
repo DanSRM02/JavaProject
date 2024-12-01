@@ -2,6 +2,7 @@ package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
 import com.oxi.software.entities.Individual;
+import com.oxi.software.entities.Purchase;
 import com.oxi.software.entities.RolType;
 import com.oxi.software.entities.User;
 import com.oxi.software.service.IndividualService;
@@ -18,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -95,6 +98,21 @@ public class UserBusiness {
             // Log de error inesperado y relanzamiento de la excepción
             logger.error("Unexpected error occurred while adding user", e);
             throw new RuntimeException("Unexpected error occurred while adding user", e);
+        }
+    }
+
+    public List<UserDTO> findAll(){
+        try {
+            List<User> userList = this.userService.findAll();
+            if (userList.isEmpty()) {
+                return List.of();
+            }
+            return userList.stream()
+                    .map(user -> modelMapper.map(user, UserDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new CustomException("Error getting users: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 

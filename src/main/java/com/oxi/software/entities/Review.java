@@ -23,6 +23,8 @@ public class Review {
     private String title;
     @Column(name = "message", nullable = false,  length = 254)
     private String message;
+    @Column(name = "state", nullable = false, columnDefinition = "boolean default true")
+    private Boolean state;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -34,7 +36,7 @@ public class Review {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //relations / DONE
+    //relations
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn (name = "fk_id_product")
