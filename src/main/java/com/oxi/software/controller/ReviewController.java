@@ -1,8 +1,7 @@
 package com.oxi.software.controller;
 
-import com.oxi.software.business.UserBusiness;
-import com.oxi.software.dto.IndividualDTO;
-import com.oxi.software.dto.UserDTO;
+import com.oxi.software.business.ReviewBusiness;
+import com.oxi.software.dto.ReviewDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,104 +13,109 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/user", method = { RequestMethod.PUT, RequestMethod.GET,RequestMethod.DELETE, RequestMethod.POST})
+@RequestMapping(path = "/api/v1/oxi/review", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 @CrossOrigin(origins = "*")
-public class UserController {
+public class ReviewController {
 
-    private final UserBusiness userBusiness;
+    private final ReviewBusiness reviewBusiness;
 
     @Autowired
-    public UserController(UserBusiness userBusiness) {
-        this.userBusiness = userBusiness;
+    public ReviewController(ReviewBusiness reviewBusiness) {
+        this.reviewBusiness = reviewBusiness;
     }
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<Map<String, Object>> addUser(@RequestBody Map<String, Object> json) {
+    // Crear nueva reseña
+    @PostMapping("/add")
+    public ResponseEntity<Map<String, Object>> createReview(@RequestBody Map<String, Object> reviewMap) {
         try {
-            // Call Business to add User
-            userBusiness.add(json);
-            // Success response
+            // Llamar al negocio para crear la reseña
+            reviewBusiness.add(reviewMap);
+            // Respuesta de éxito
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "User added successfully", HttpStatus.OK),
+                    "Review added successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
+            // Respuesta para excepciones personalizadas
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
+            // Respuesta para excepciones generales
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error adding user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    "Error adding review: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
-    @PutMapping(path = "/update/{id}")
-    public ResponseEntity<Map<String, Object>> updateUser(@RequestBody Map<String, Object> json, @PathVariable Long id) {
+    // Actualizar reseña
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Map<String, Object>> updateReview(@RequestBody Map<String, Object> reviewMap, @PathVariable Long id) {
         try {
-            // Call Business to update User
-            userBusiness.update(json, id);
-            // Success response
+            // Llamar al negocio para actualizar la reseña
+            reviewBusiness.update(reviewMap, id);
+            // Respuesta de éxito
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "User modified successfully", HttpStatus.OK),
+                    "Review updated successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
+            // Respuesta para excepciones personalizadas
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
+            // Respuesta para excepciones generales
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error modifying user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    "Error updating review: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
+    // Obtener todas las reseñas
     @GetMapping("/all")
-    public ResponseEntity<Map<String, Object>> getAllUsers() {
+    public ResponseEntity<Map<String, Object>> getAllReviews() {
         try{
-            List<UserDTO> userDTOSList = userBusiness.findAll();
-            if (!userDTOSList.isEmpty()) {
+            List<ReviewDTO> reviewDTOList = reviewBusiness.findAll();
+            if (!reviewDTOList.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        userDTOSList,
+                        reviewDTOList,
                         HttpStatus.OK,
                         "Successfully Completed",
-                        userDTOSList.size()),
+                        reviewDTOList.size()),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         null,
                         HttpStatus.NO_CONTENT,
-                        "Individuals not found",
+                        "Reviews not found",
                         0),
                         HttpStatus.ACCEPTED);
             }
-        }catch (Exception e){
-            throw new CustomException("Error getting individuals: " + e.getMessage(),
+        } catch (Exception e) {
+            throw new CustomException("Error getting Reviews: " + e.getMessage(),
                     HttpStatus.CONFLICT);
         }
     }
 
+    // Obtener reseña por ID
     @GetMapping("/find/{id}")
-    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getReviewById(@PathVariable Long id) {
         try{
-            UserDTO userDTO = userBusiness.findBy(id);
-            if (userDTO != null) {
+            ReviewDTO reviewDTO = reviewBusiness.findBy(id);
+            if (reviewDTO != null) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(
-                        userDTO,
+                        reviewDTO,
                         ResponseHttpApi.CODE_OK,
                         "Successfully Completed"
                 ), HttpStatus.OK);
             }
             return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
                     ResponseHttpApi.CODE_BAD,
-                    "There isn't that user"
+                    "There isn't that review"
             ), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            throw new CustomException("Error getting user: " + e.getMessage(),
+            throw new CustomException("Error getting Review: " + e.getMessage(),
                     HttpStatus.CONFLICT);
         }
     }
 }
+

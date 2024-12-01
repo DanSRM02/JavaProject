@@ -97,46 +97,68 @@ public class IndividualBusiness {
 
 
     public void add(Map<String, Object> request) {
-        try{
-            //Build the individual using from DTO
+        try {
+            // Validar datos y convertir a DTO
             IndividualDTO individualDTO = validateData(request);
+
+            // Crear la entidad Individual y asignar propiedades
             Individual individual = modelMapper.map(individualDTO, Individual.class);
-            //Assign Foreign Keys - Document Type
+
+            // Asignar claves foráneas - Tipo de Documento
             individual.setDocumentType(documentTypeService.findBy(individualDTO.getDocumentType().getId()));
-            //Individual Type
+
+            // Asignar tipo de Individual
             individual.setIndividualType(individualTypeService.findBy(individualDTO.getIndividualType().getId()));
 
+            // Guardar el individual
             this.individualService.save(individual);
-        } catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw new CustomException("Error adding individual", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException();
-        }
 
+            // Log de información sobre la operación exitosa
+            logger.info("Individual added successfully: {}", individual);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error adding individual", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding individual", e);
+            throw new RuntimeException("Unexpected error occurred while adding individual", e);
+        }
     }
 
     public void update(Map<String, Object> request, Long id) {
-        try{
-            //Validate Data to DTO
+        try {
+            // Validar datos y convertir a DTO
             IndividualDTO individualDTO = validateData(request);
-            individualDTO.setId(id);
+            individualDTO.setId(id);  // Establecer el ID del individual a actualizar
 
+            // Crear la entidad Individual y asignar propiedades
             Individual individual = modelMapper.map(individualDTO, Individual.class);
-            //Assign Foreign Keys - Document Type
-            individual.setDocumentType(documentTypeService.findBy(individualDTO.getDocumentType().getId()));
-            //Individual Type
-            individual.setIndividualType(individualTypeService.findBy(individualDTO.getIndividualType().getId()));
-            this.individualService.save(individual);
-        } catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw new CustomException("Error add product", HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new RuntimeException();
-        }
 
+            // Asignar claves foráneas - Tipo de Documento
+            individual.setDocumentType(documentTypeService.findBy(individualDTO.getDocumentType().getId()));
+
+            // Asignar tipo de Individual
+            individual.setIndividualType(individualTypeService.findBy(individualDTO.getIndividualType().getId()));
+
+            // Guardar el individual actualizado
+            this.individualService.save(individual);
+
+            // Log de información sobre la operación exitosa
+            logger.info("Individual updated successfully: {}", individual);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error updating individual", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating individual", e);
+            throw new RuntimeException("Unexpected error occurred while updating individual", e);
+        }
     }
 
     public IndividualTypeDTO getIndividualTypeDTO(Long id){

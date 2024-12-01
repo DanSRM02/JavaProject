@@ -6,11 +6,10 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DeliveryDTO {
+public class PurchaseDTO {
 
     private Long id;
-    private OrderDTO order;
-    private UserDTO domiciliary ;
+    private Integer total;
+    private DeliveryDTO delivery;
 
 }
-

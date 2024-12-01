@@ -1,13 +1,11 @@
 package com.oxi.software.business;
 
 
-import com.oxi.software.dto.DeliveryDTO;
-import com.oxi.software.dto.OrderDTO;
-import com.oxi.software.dto.ProductDTO;
-import com.oxi.software.dto.UserDTO;
+import com.oxi.software.dto.*;
 import com.oxi.software.entities.Delivery;
 import com.oxi.software.entities.Order;
 import com.oxi.software.entities.User;
+import com.oxi.software.service.MailService;
 import com.oxi.software.service.OrderService;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.UserService;
@@ -24,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,15 +32,17 @@ public class OrderBusiness {
 
     private final OrderService orderService;
     private final UserService userService;
+    private final MailService mailService;
 
     private static final Logger logger = LogManager.getLogger(Util.class);
     private final ModelMapper modelMapper = new ModelMapper();
     private final ProductService productService;
 
     @Autowired
-    public OrderBusiness(OrderService orderService, UserService userService, ProductService productService) {
+    public OrderBusiness(OrderService orderService, UserService userService, MailService mailService, ProductService productService) {
         this.orderService = orderService;
         this.userService = userService;
+        this.mailService = mailService;
         this.productService = productService;
     }
 
@@ -80,37 +81,104 @@ public class OrderBusiness {
         return orderDTO;
     }
 
+    public void sendEmail(Long idOrder) {
+        try {
+            // Buscar la orden
+            OrderDTO order = this.findBy(idOrder);
+            if (order == null) {
+                throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
+            }
+
+            // Validar que el cliente tenga un correo asociado
+            String customerEmail = order.getUser().getIndividual().getEmail();
+            if (customerEmail == null || customerEmail.isEmpty()) {
+                throw new CustomException("Customer email not found for order ID: " + idOrder, HttpStatus.BAD_REQUEST);
+            }
+
+            // Calcular el total de la orden
+            int total = calculateTotal(order.getProductList());
+
+            // Crear las variables para Thymeleaf
+            Map<String, Object> templateVariables = new HashMap<>();
+            templateVariables.put("order", order);
+            templateVariables.put("total", total);  // Agregar el total a las variables
+
+            // Configurar los detalles del correo
+            MailDTO mailDTO = MailDTO.builder()
+                    .to(customerEmail)
+                    .subject("Your Order Details - Order #" + order.getId())
+                    .build();
+
+            // Log de información del envío
+            logger.info("Sending email to customer: {}", customerEmail);
+
+            // Enviar el correo
+            mailService.sendEmailWithTemplate(mailDTO, templateVariables);
+
+            // Log de éxito
+            logger.info("Email sent successfully for order ID: {}", idOrder);
+
+        } catch (CustomException e) {
+            logger.error("Custom exception occurred: {}", e.getMessage());
+            throw e; // Relanzar la excepción personalizada
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while sending email for order ID: {}", idOrder, e);
+            throw new RuntimeException("Error occurred while sending email", e);
+        }
+    }
+
     public void add(Map<String, Object> json) {
         try {
+            // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
+
+            // Crear la entidad Order y asignar propiedades
             Order order = modelMapper.map(orderDTO, Order.class);
-            //Assign Foreign Key - User
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
+
+            // Guardar la orden
             this.orderService.save(order);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to create order",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log de información sobre la operación exitosa
+            logger.info("Order added successfully: {}", order);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to create order", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while adding order", e);
+            throw new RuntimeException("Unexpected error occurred while adding order", e);
         }
     }
 
     public void update(Map<String, Object> json, Long id) {
         try {
+            // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
-            orderDTO.setId(id);
+            orderDTO.setId(id);  // Establecer el ID de la orden a actualizar
 
+            // Crear la entidad Order y asignar propiedades
             Order order = modelMapper.map(orderDTO, Order.class);
-            //Assign Foreign Key - User
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
+
+            // Guardar la orden actualizada
             this.orderService.save(order);
-        }catch (CustomException ce){
-            logger.error(ce.getMessage());
-            throw  new CustomException("Error to modified user",ce.getStatus());
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            throw new RuntimeException();
+
+            // Log de información sobre la operación exitosa
+            logger.info("Order updated successfully: {}", order);
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error to modify order", ce.getStatus());
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating order", e);
+            throw new RuntimeException("Unexpected error occurred while updating order", e);
         }
     }
 
@@ -146,5 +214,16 @@ public class OrderBusiness {
     public UserDTO getUserDTO(Long id){
         User userDTO = userService.findBy(id);
         return modelMapper.map(userDTO, UserDTO.class);
+    }
+
+    public int calculateTotal(List<ProductDTO> productList) {
+        if (productList == null || productList.isEmpty()) {
+            return 0; // Manejo de lista nula o vacía
+        }
+
+        return productList.stream()
+                .filter(product -> product.getPrice() != null && product.getQuantity() != null) // Ignorar productos inválidos
+                .mapToInt(product -> product.getQuantity() * product.getPrice())
+                .sum();
     }
 }

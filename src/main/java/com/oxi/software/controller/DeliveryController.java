@@ -24,47 +24,48 @@ public class DeliveryController {
         this.deliveryBusiness = deliveryBusiness;
     }
 
-    // Endpoint Add delivery
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createDelivery(@RequestBody Map<String, Object> productMap) {
         try {
             // Call Business to create delivery
             deliveryBusiness.add(productMap);
-            // Debug for errors
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Add Delivery successfully"),
+
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Add Delivery successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error adding Delivery" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error adding Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> updateDelivery(@RequestBody Map<String, Object> productMap, @PathVariable Long id) {
-        try{
+        try {
+            // Call Business to update delivery
             deliveryBusiness.update(productMap, id);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_OK,
-                    "Update product successfully"),
+
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Update Delivery successfully", HttpStatus.OK),
                     HttpStatus.OK);
-        }catch (CustomException e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    e.getMessage()),
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "Error updated product" + e.getMessage()),
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error updating Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         }
     }
