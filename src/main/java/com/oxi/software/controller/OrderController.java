@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/order", method = { RequestMethod.PUT, RequestMethod.GET,RequestMethod.DELETE, RequestMethod.POST})
+@RequestMapping("/api/v1/oxi/order")
 @CrossOrigin(origins = "*")
 public class OrderController {
+
     private final OrderBusiness orderBusiness;
 
     @Autowired
@@ -23,117 +24,72 @@ public class OrderController {
         this.orderBusiness = orderBusiness;
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addOrder(@RequestBody Map<String, Object> json) {
-        try {
-            // Call Business to add Order
-            orderBusiness.add(json);
+        return processRequest(() -> {
 
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Order added successfully", HttpStatus.OK),
-                    HttpStatus.OK);
-        } catch (CustomException e) {
-            // Custom exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // General exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error adding order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        }
-    }
+        OrderDTO response = orderBusiness.add(json);
 
-    @PostMapping(path = "/send-email/{id-order}")
-    public ResponseEntity<Map<String, Object>> sendEmail(@PathVariable("id-order") Long idOrder) {
-        try {
-            // Call Business to update Order
+            Long idOrder=response.getId();
             orderBusiness.sendEmail(idOrder);
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Order send to email successfully", HttpStatus.OK),
-                    HttpStatus.OK);
-        } catch (CustomException e) {
-            // Custom exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // General exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error sending order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        }
+            return ResponseHttpApi.responseHttpPost("Order added successfully", HttpStatus.OK);
+        });
     }
 
-    @PutMapping(path = "/update/{id}")
-    public ResponseEntity<Map<String, Object>> updateOrder(@RequestBody Map<String, Object> json, @PathVariable Long id) {
-        try {
-            // Call Business to update Order
-            orderBusiness.update(json, id);
+    @PostMapping("/send-email/{idOrder}")
+    public ResponseEntity<Map<String, Object>> sendEmail(@PathVariable Long idOrder) {
+        return processRequest(() -> {
 
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Order modified successfully", HttpStatus.OK),
-                    HttpStatus.OK);
-        } catch (CustomException e) {
-            // Custom exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // General exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error modifying order: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        }
+            orderBusiness.sendEmail(idOrder);
+            return ResponseHttpApi.responseHttpPost("Order sent to email successfully", HttpStatus.OK);
+        });
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Map<String, Object>> updateOrder(@RequestBody Map<String, Object> json, @PathVariable Long id) {
+        return processRequest(() -> {
+            orderBusiness.update(json, id);
+            return ResponseHttpApi.responseHttpPost("Order modified successfully", HttpStatus.OK);
+        });
     }
 
     @GetMapping("/find/{id}")
     public ResponseEntity<Map<String, Object>> getOrderById(@PathVariable Long id) {
-        try{
+        return processRequest(() -> {
             OrderDTO orderDTO = orderBusiness.findBy(id);
             if (orderDTO != null) {
-                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(
-                        orderDTO,
-                        ResponseHttpApi.CODE_OK,
-                        "Successfully Completed"
-                ), HttpStatus.OK);
+                return ResponseHttpApi.responseHttpFindId(orderDTO, ResponseHttpApi.CODE_OK, "Successfully Completed");
             }
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
-                    ResponseHttpApi.CODE_BAD,
-                    "There isn't that order"
-            ), HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            throw new CustomException("Error getting order: " + e.getMessage(),
-                    HttpStatus.CONFLICT);
-        }
+            return ResponseHttpApi.responseHttpAction(ResponseHttpApi.CODE_BAD, "There isn't that order");
+        });
     }
 
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllOrders() {
-        try{
+        return processRequest(() -> {
             List<OrderDTO> orderDTOList = orderBusiness.findAll();
             if (!orderDTOList.isEmpty()) {
-                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        orderDTOList,
-                        HttpStatus.OK,
-                        "Successfully Completed",
-                        orderDTOList.size()),
-                        HttpStatus.OK);
+                return ResponseHttpApi.responseHttpFindAll(orderDTOList, HttpStatus.OK, "Successfully Completed", orderDTOList.size());
             } else {
-                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        null,
-                        HttpStatus.NO_CONTENT,
-                        "Orders not found",
-                        0),
-                        HttpStatus.ACCEPTED);
+                return ResponseHttpApi.responseHttpFindAll(null, HttpStatus.NO_CONTENT, "Orders not found", 0);
             }
-        }catch (Exception e){
-            throw new CustomException("Error getting orders: " + e.getMessage(),
-                    HttpStatus.CONFLICT);
+        });
+    }
+
+    // Método auxiliar para manejar solicitudes
+    private ResponseEntity<Map<String, Object>> processRequest(RequestHandler handler) {
+        try {
+            return new ResponseEntity<>(handler.handle(), HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost("Error: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // Interfaz funcional para manejar lógica en processRequest
+    @FunctionalInterface
+    private interface RequestHandler {
+        Map<String, Object> handle() throws Exception;
     }
 }

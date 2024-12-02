@@ -1,5 +1,6 @@
 package com.oxi.software.service.dao;
 
+import com.oxi.software.entities.Order;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
@@ -8,7 +9,7 @@ public interface Idao<T,ID>{
 
     public T findBy(ID id);
     @Transactional
-    public  void save(T obje);
+    public Order save(T obje);
 
     @Transactional
     public void saveAll(Iterable<T> obje);

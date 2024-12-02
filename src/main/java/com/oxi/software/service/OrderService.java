@@ -23,8 +23,8 @@ public class OrderService implements Idao<Order, Long> {
     }
 
     @Override
-    public void save(Order obje) {
-        this.orderRepository.save(obje);
+    public Order save(Order obje) {
+        return this.orderRepository.save(obje);
     }
 
     @Override

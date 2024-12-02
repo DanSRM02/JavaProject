@@ -1,5 +1,6 @@
 package com.oxi.software.service;
 
+import com.oxi.software.entities.Order;
 import com.oxi.software.entities.User;
 import com.oxi.software.repository.UserRepository;
 import com.oxi.software.service.dao.Idao;
@@ -23,8 +24,9 @@ public class UserService implements Idao<User, Long> {
     }
 
     @Override
-    public void save(User obje) {
+    public Order save(User obje) {
         this.userRepository.save(obje);
+        return null;
     }
 
     @Override

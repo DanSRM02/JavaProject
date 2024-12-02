@@ -23,10 +23,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -160,7 +157,7 @@ public class OrderBusiness {
         }
     }
 
-    public void add(Map<String, Object> json) {
+    public OrderDTO add(Map<String, Object> json) {
         try {
             // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
@@ -169,11 +166,17 @@ public class OrderBusiness {
             Order order = modelMapper.map(orderDTO, Order.class);
             order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
 
-            // Guardar la orden
-            this.orderService.save(order);
+            // Guardar la orden en la base de datos
+            Order savedOrder = orderService.save(order);
+
+            // Convertir la entidad Order guardada a OrderDTO
+            OrderDTO savedOrderDTO = modelMapper.map(savedOrder, OrderDTO.class);
 
             // Log de información sobre la operación exitosa
-            logger.info("Order added successfully: {}", order);
+            logger.info("Order added successfully: {}", savedOrder);
+
+            // Retornar el DTO de la orden guardada (que contiene el ID)
+            return savedOrderDTO;
 
         } catch (CustomException ce) {
             // Log de error personalizado y relanzamiento de la excepción
@@ -186,6 +189,7 @@ public class OrderBusiness {
             throw new RuntimeException("Unexpected error occurred while adding order", e);
         }
     }
+
 
     public void update(Map<String, Object> json, Long id) {
         try {

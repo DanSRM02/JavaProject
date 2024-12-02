@@ -1,6 +1,7 @@
 package com.oxi.software.service;
 
 import com.oxi.software.entities.Individual;
+import com.oxi.software.entities.Order;
 import com.oxi.software.repository.IndividualRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
@@ -23,8 +24,9 @@ public class IndividualService implements Idao<Individual, Long> {
     }
 
     @Override
-    public void save(Individual obje) {
+    public Order save(Individual obje) {
         this.individualRepository.save(obje);
+        return null;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.oxi.software.service;
 
 import com.oxi.software.entities.IndividualType;
+import com.oxi.software.entities.Order;
 import com.oxi.software.repository.IndividualTypeRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
@@ -23,8 +24,9 @@ public class IndividualTypeService implements Idao<IndividualType, Long> {
     }
 
     @Override
-    public void save(IndividualType obje) {
+    public Order save(IndividualType obje) {
         this.individualTypeRepository.save(obje);
+        return null;
     }
 
     @Override

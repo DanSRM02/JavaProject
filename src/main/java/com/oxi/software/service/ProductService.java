@@ -1,5 +1,6 @@
 package com.oxi.software.service;
 
+import com.oxi.software.entities.Order;
 import com.oxi.software.entities.Product;
 import com.oxi.software.repository.ProductRepository;
 import com.oxi.software.service.dao.Idao;
@@ -23,8 +24,9 @@ public class ProductService implements Idao<Product, Long> {
     }
 
     @Override
-    public void save(Product obje) {
+    public Order save(Product obje) {
         this.productRepository.save(obje);
+        return null;
     }
 
     @Override

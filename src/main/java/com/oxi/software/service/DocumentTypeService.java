@@ -1,6 +1,7 @@
 package com.oxi.software.service;
 
 import com.oxi.software.entities.DocumentType;
+import com.oxi.software.entities.Order;
 import com.oxi.software.repository.DocumentTypeRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
@@ -23,8 +24,9 @@ public class DocumentTypeService implements Idao<DocumentType, Long> {
     }
 
     @Override
-    public void save(DocumentType obje) {
+    public Order save(DocumentType obje) {
         this.documentTypeRepository.save(obje);
+        return null;
     }
 
     @Override

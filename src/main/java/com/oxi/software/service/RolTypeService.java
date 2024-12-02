@@ -1,5 +1,6 @@
 package com.oxi.software.service;
 
+import com.oxi.software.entities.Order;
 import com.oxi.software.entities.RolType;
 import com.oxi.software.repository.RolTypeRepository;
 import com.oxi.software.service.dao.Idao;
@@ -23,8 +24,9 @@ public class RolTypeService implements Idao<RolType, Long> {
     }
 
     @Override
-    public void save(RolType obje) {
+    public Order save(RolType obje) {
         this.rolTypeRepository.save(obje);
+        return null;
     }
 
     @Override

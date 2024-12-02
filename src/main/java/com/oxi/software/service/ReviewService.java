@@ -1,5 +1,6 @@
 package com.oxi.software.service;
 
+import com.oxi.software.entities.Order;
 import com.oxi.software.entities.Review;
 import com.oxi.software.repository.ReviewRepository;
 import com.oxi.software.service.dao.Idao;
@@ -23,8 +24,9 @@ public class ReviewService implements Idao<Review, Long> {
     }
 
     @Override
-    public void save(Review obje) {
+    public Order save(Review obje) {
         this.reviewRepository.save(obje);
+        return null;
     }
 
     @Override

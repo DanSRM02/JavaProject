@@ -1,7 +1,7 @@
 package com.oxi.software.service;
 
 import com.oxi.software.entities.Delivery;
-import com.oxi.software.entities.Delivery;
+import com.oxi.software.entities.Order;
 import com.oxi.software.repository.DeliveryRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
@@ -24,8 +24,9 @@ public class DeliveryService implements Idao<Delivery, Long> {
     }
 
     @Override
-    public void save(Delivery obje) {
+    public Order save(Delivery obje) {
         this.deliveryRepository.save(obje);
+        return null;
     }
 
     @Override
