@@ -22,12 +22,33 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_user")
     private Long id;
+
     @Column(name = "username", length = 25, unique = true)
     private String username;
+
     @Column(name = "password", length = 254)
     private String password;
+
     @Column(name = "state")
-    private Boolean state;
+    private Boolean state; // Este campo puede ser utilizado para indicar si el usuario está activo o no
+
+    @Column(name = "name", length = 50) // Campo para el nombre
+    private String name;
+
+    @Column(name = "email", length = 50, unique = true) // Campo para el correo electrónico
+    private String email;
+
+    @Column(name = "address", length = 100) // Campo para la dirección
+    private String address;
+
+    @Column(name = "phone", length = 15) // Campo para el número de teléfono
+    private String phone;
+
+    @Column(name = "identification_type", length = 20) // Campo para el tipo de identificación
+    private String identificationType;
+
+    @Column(name = "identification", length = 20) // Campo para el número de identificación
+    private String identification;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)

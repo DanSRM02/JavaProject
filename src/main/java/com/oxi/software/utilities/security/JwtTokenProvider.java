@@ -34,7 +34,7 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())
-                    .build() // ✅ .build() crea el JwtParser
+                    .build()
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class JwtTokenProvider {
     public String getUsernameFromToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
-                .build() // ✅ .build() crea el JwtParser
+                .build()
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();

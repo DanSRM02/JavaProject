@@ -26,6 +26,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable()) // Deshabilitar CSRF
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll() // Permitir acceso sin autenticación a rutas públicas
+                        .requestMatchers("/api/v1/oxi/individual/add", "/api/v1/oxi/product/add").permitAll() // Permitir acceso a estos endpoints
                         .anyRequest().authenticated()) // Rutas protegidas requieren autenticación
                 .addFilterBefore(new JwtValidator(jwtTokenProvider, userDetailsService),
                         UsernamePasswordAuthenticationFilter.class); // Añadir el filtro JWT antes del filtro de autenticación
