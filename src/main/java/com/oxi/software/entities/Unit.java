@@ -36,6 +36,6 @@ public class Unit {
     private Date updatedAt;
 
     @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Product> product;
+    private List<ProductVariant> productVariantList;
 }
 

@@ -20,18 +20,16 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_product")
     private Long id;
+
     @Column(name = "name", nullable = false, length = 25, unique = true)
     private String name;
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+
     @Column(name = "state", nullable = false)
     private Boolean state;
-    @Column(name = "price", nullable = false)
-    private Integer price;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at",updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
     @UpdateTimestamp
@@ -39,15 +37,14 @@ public class Product {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //relations / DONE
-
+    // Relaciones existentes
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Review> review;
 
-    @ManyToMany(mappedBy = "productList", cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    private List<Order> orderList;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderLine> orderLines;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    @JoinColumn (name = "fk_id_unit", nullable = false)
-    private Unit unit;
+    // Nueva relación para las variantes del producto
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ProductVariant> variants;
 }

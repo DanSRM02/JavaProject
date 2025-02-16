@@ -1,13 +1,15 @@
 package com.oxi.software.business;
 
-
-import com.oxi.software.controller.PdfService;
-import com.oxi.software.dto.*;
+import com.oxi.software.dto.OrderDTO;
+import com.oxi.software.dto.OrderLineDTO;
+import com.oxi.software.dto.ProductDTO;
+import com.oxi.software.dto.UserDTO;
 import com.oxi.software.entities.Order;
+import com.oxi.software.entities.ProductVariant;
 import com.oxi.software.entities.User;
-import com.oxi.software.service.MailService;
 import com.oxi.software.service.OrderService;
 import com.oxi.software.service.ProductService;
+import com.oxi.software.service.ProductVariantService;
 import com.oxi.software.service.UserService;
 import com.oxi.software.utilities.Util;
 import com.oxi.software.utilities.exception.CustomException;
@@ -17,14 +19,11 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,231 +33,190 @@ public class OrderBusiness {
 
     private final OrderService orderService;
     private final UserService userService;
-    private final MailService mailService;
-    private final PdfService pdfService;
+    private final ProductService productService;
+    private final ProductVariantService productVariantService;
+    // Otros servicios (MailService, PdfService) se omiten para simplificar
 
     private static final Logger logger = LogManager.getLogger(Util.class);
     private final ModelMapper modelMapper = new ModelMapper();
-    private final ProductService productService;
 
-    @Autowired
-    public OrderBusiness(OrderService orderService, UserService userService, MailService mailService, PdfService pdfService, ProductService productService) {
+    public OrderBusiness(OrderService orderService, UserService userService, ProductService productService, ProductVariantService productVariantService) {
         this.orderService = orderService;
         this.userService = userService;
-        this.mailService = mailService;
-        this.pdfService = pdfService;
         this.productService = productService;
+        this.productVariantService = productVariantService;
     }
 
+    /**
+     * Valida el JSON recibido y construye un OrderDTO con líneas de orden.
+     * Se espera que en el JSON exista "user_id" y un array "product_ids" con objetos que contengan "id" y "quantity".
+     */
     public OrderDTO validateData(Map<String, Object> data) throws CustomException {
-        //Pass Map to JSONObject
+        // Convertir el mapa a JSONObject
         JSONObject request = Util.getData(data);
 
-        //Prepare DTO
+        // Preparar DTO de Order
         OrderDTO orderDTO = new OrderDTO();
-        logger.debug(orderDTO.toString());
-        System.out.println(orderDTO);
-
-        //Assign data to DTO
         orderDTO.setId(0L);
-        orderDTO.setState(request.getBoolean("state"));
+        orderDTO.setState("PENDING");
+        orderDTO.setPriority(false);
 
-        //Search user and assign to DTO
+        // Buscar usuario y asignarlo
         Long userId = Long.parseLong(request.get("user_id").toString());
         UserDTO userDTO = getUserDTO(userId);
         orderDTO.setUser(userDTO);
 
-        //The products that are in an order
         JSONArray products = request.getJSONArray("product_ids");
-        List<ProductDTO> productDTOList = new ArrayList<>();
+        List<OrderLineDTO> orderLines = new ArrayList<>();
 
-        for (int i = 0; i < products.length() ; i++) {
-            JSONObject product = products.getJSONObject(i);
-            Long id = Long.parseLong(product.get("id").toString());
+        for (int i = 0; i < products.length(); i++) {
+            JSONObject productJson = products.getJSONObject(i);
+            Long productId = productJson.getLong("id");
+            int quantity = productJson.optInt("quantity", 1);
 
-            ProductDTO productDTO = modelMapper.map(productService.findBy(id), ProductDTO.class);
-            productDTOList.add(productDTO);
-        }
-
-        orderDTO.setProductList(productDTOList);
-        System.out.println(orderDTO);
-        return orderDTO;
-    }
-
-    public PdfOrderDTO createPdfOrderDTO(OrderDTO orderDTO, int totalAmount) {
-
-        if (orderDTO.getProductList() == null || orderDTO.getProductList().isEmpty()) {
-            throw new CustomException("Product list is empty for order ID: " + orderDTO.getId(), HttpStatus.BAD_REQUEST);
-        }
-
-        return PdfOrderDTO.builder()
-                .id(orderDTO.getId())
-                .customerName(orderDTO.getUser().getIndividual().getName())
-                .customerEmail(orderDTO.getUser().getIndividual().getEmail())
-                .customerAddress(orderDTO.getUser().getIndividual().getAddress())
-                .productList(orderDTO.getProductList())
-                .totalAmount(totalAmount)
-                .orderDate(orderDTO.getCreatedAt().toString())
-                .build();
-    }
-
-    public void sendEmail(Long idOrder) {
-        try {
-            OrderDTO order = this.findBy(idOrder);
-            if (order == null) {
-                throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
-            }
-            // Validar que el cliente tenga un correo asociado
-            String customerEmail = order.getUser().getIndividual().getEmail();
-            if (customerEmail == null || customerEmail.isEmpty()) {
-                throw new CustomException("Customer email not found for order ID: " + idOrder, HttpStatus.BAD_REQUEST);
+            // Busca el producto y/o variante
+            ProductVariant product = productVariantService.findBy(productId);
+            if (product == null) {
+                throw new CustomException("Producto no encontrado con ID: " + productId, HttpStatus.NOT_FOUND);
             }
 
-            // Calcular el total de la orden
-            int total = calculateTotal(order.getProductList());
-
-            // Crear el PdfOrderDTO
-            PdfOrderDTO pdfOrderDTO = createPdfOrderDTO(order, total);
-
-            // Generar el PDF con PdfOrderDTO
-            String pdfFilePath = pdfService.generateOrderPdf(pdfOrderDTO);
-
-            // Verificar si el archivo PDF fue creado exitosamente
-            File pdfFile = new File(pdfFilePath);
-            if (!pdfFile.exists()) {
-                throw new RuntimeException("Failed to generate PDF file: " + pdfFilePath);
-            }
-
-            // Crear las variables para Thymeleaf
-            Map<String, Object> templateVariables = new HashMap<>();
-            templateVariables.put("order", order);
-            templateVariables.put("total", total);
-            templateVariables.put("pdfPath", pdfFilePath);
-
-            // Configurar los detalles del correo (incluyendo el PDF como adjunto)
-            MailDTO mailDTO = MailDTO.builder()
-                    .to(customerEmail)
-                    .subject("Your Order Details - Order #" + order.getId())
-                    .attachment(pdfFilePath)  // Adjuntar el PDF
+            OrderLineDTO line = OrderLineDTO.builder()
+                    .product(modelMapper.map(product, ProductDTO.class))
+                    .quantity(quantity)
                     .build();
-
-            // Log de información del envío
-            logger.info("Sending email to customer: {}", customerEmail);
-
-            // Enviar el correo con las variables de la plantilla
-            mailService.sendEmailWithTemplate(mailDTO, templateVariables);
-
-            // Log de éxito
-            logger.info("Email sent successfully for order ID: {}", idOrder);
-
-        } catch (CustomException e) {
-            logger.error("Custom exception occurred: {}", e.getMessage());
-            throw e;
-        } catch (Exception e) {
-            logger.error("Unexpected error occurred while sending email for order ID: {}", idOrder, e);
-            throw new RuntimeException("Error occurred while sending email", e);
+            orderLines.add(line);
         }
+
+        orderDTO.setOrderLines(orderLines);
+
+        // Inicialmente el total se asigna en 0, se calculará en el method add
+        orderDTO.setTotal(0.0);
+
+        logger.debug("OrderDTO after validation: {}", orderDTO);
+        return orderDTO;
     }
 
     public void add(Map<String, Object> json) {
         try {
-            // Validar datos y convertir a DTO
+            // 1. Validar datos y convertir a OrderDTO
             OrderDTO orderDTO = validateData(json);
+            // Para una nueva orden, el ID debe ser null
+            orderDTO.setId(null);
 
-            // Crear la entidad Order y asignar propiedades
+            // 2. Mapear el DTO a entidad Order y asignar el usuario
             Order order = modelMapper.map(orderDTO, Order.class);
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            order.setState("PENDING");
+            order.setPriority(false);
 
-            // Guardar la orden
-            this.orderService.save(order);
+            // 3. Inicializar total en 0
+            double total = 0.0;
 
-            // Log de información sobre la operación exitosa
+            // 4. Procesar cada línea de orden: calcular subtotal, validar stock y actualizarlo
+            for (OrderLineDTO line : orderDTO.getOrderLines()) {
+                // Buscar la variante real a partir del producto en la línea
+                ProductVariant variant = productVariantService.findBy(line.getProduct().getId());
+                System.out.println(variant);
+                int quantityRequested = line.getQuantity();
+
+                if (variant.getQuantity() < quantityRequested) {
+                    throw new CustomException("Stock insuficiente para el producto ID: " + variant.getId(), HttpStatus.BAD_REQUEST);
+                }
+
+                // Calcular subtotal y acumular en total
+                double subtotal = variant.getPrice() * quantityRequested;
+                total += subtotal;
+
+                // Restar stock y guardar la variante actualizada
+                variant.setQuantity(variant.getQuantity() - quantityRequested);
+                productVariantService.save(variant);
+            }
+
+            // 5. Asignar el total calculado a la orden
+            order.setTotal(total);
+
+            // 6. Asegurar que cada línea de orden tenga la referencia al Order padre
+            if (order.getOrderLines() != null) {
+                order.getOrderLines().forEach(line -> line.setOrder(order));
+            }
+
+            // 7. Guardar la orden
+            orderService.save(order);
             logger.info("Order added successfully: {}", order);
 
+        } catch (DataIntegrityViolationException ex) {
+            logger.error("Data integrity violation: {}", ex.getMessage(), ex);
+            throw new CustomException("Ya existe una orden con datos conflictivos", HttpStatus.BAD_REQUEST);
         } catch (CustomException ce) {
-            // Log de error personalizado y relanzamiento de la excepción
             logger.error("Custom error: {}", ce.getMessage(), ce);
-            throw new CustomException("Error to create order", ce.getStatus());
-
+            throw new CustomException("Error al crear la orden: " + ce.getMessage(), ce.getStatus());
         } catch (Exception e) {
-            // Log de error inesperado y relanzamiento de la excepción
-            logger.error("Unexpected error occurred while adding order", e);
-            throw new RuntimeException("Unexpected error occurred while adding order", e);
+            logger.error("Unexpected error occurred while adding order: {}", e.getMessage(), e);
+            throw new CustomException("Error inesperado al crear la orden: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public List<OrderDTO> findAllByState(String state) {
+        try {
+            List<Order> orderList = orderService.findAllByState(state);
+            if (orderList.isEmpty()) {
+                return List.of();
+            }
+            return orderList.stream()
+                    .map(order -> modelMapper.map(order, OrderDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new CustomException("Error al obtener órdenes por estado: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     public void update(Map<String, Object> json, Long id) {
         try {
-            // Validar datos y convertir a DTO
             OrderDTO orderDTO = validateData(json);
-            orderDTO.setId(id);  // Establecer el ID de la orden a actualizar
-
-            // Crear la entidad Order y asignar propiedades
+            orderDTO.setId(id);
             Order order = modelMapper.map(orderDTO, Order.class);
-            order.setUser(userService.findBy(orderDTO.getUser().getId()));  // Asignar el usuario
-
-            // Guardar la orden actualizada
-            this.orderService.save(order);
-
-            // Log de información sobre la operación exitosa
+            order.setUser(userService.findBy(orderDTO.getUser().getId()));
+            orderService.save(order);
             logger.info("Order updated successfully: {}", order);
-
         } catch (CustomException ce) {
-            // Log de error personalizado y relanzamiento de la excepción
             logger.error("Custom error: {}", ce.getMessage(), ce);
-            throw new CustomException("Error to modify order", ce.getStatus());
-
+            throw new CustomException("Error al modificar la orden: " + ce.getMessage(), ce.getStatus());
         } catch (Exception e) {
-            // Log de error inesperado y relanzamiento de la excepción
-            logger.error("Unexpected error occurred while updating order", e);
-            throw new RuntimeException("Unexpected error occurred while updating order", e);
+            logger.error("Unexpected error occurred while updating order: {}", e.getMessage(), e);
+            throw new CustomException("Error inesperado al actualizar la orden: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public List<OrderDTO> findAll(){
         try {
-            List<Order> orderList = this.orderService.findAll();
+            List<Order> orderList = orderService.findAll();
             if (orderList.isEmpty()) {
                 return List.of();
             }
             return orderList.stream()
-                    .map(delivery -> modelMapper.map(delivery, OrderDTO.class))
+                    .map(order -> modelMapper.map(order, OrderDTO.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new CustomException("Error getting orders: " + e.getMessage(),
-                    HttpStatus.BAD_REQUEST);
+            throw new CustomException("Error al obtener órdenes: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
     public OrderDTO findBy(Long id){
         try {
-            Order order = this.orderService.findBy(id);
-            logger.info("individual find {}", order);
+            Order order = orderService.findBy(id);
+            logger.info("Order found: {}", order);
             return modelMapper.map(order, OrderDTO.class);
         } catch (EntityNotFoundException eNT) {
             logger.error(eNT.getMessage());
-            throw new CustomException("¡ERROR!, Not found user", HttpStatus.NOT_FOUND);
+            throw new CustomException("Orden no encontrada", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             logger.error(e.getMessage());
-            throw new CustomException("¡ERROR!, Error getting user by id", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new CustomException("Error al obtener la orden por ID", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     public UserDTO getUserDTO(Long id){
-        User userDTO = userService.findBy(id);
-        return modelMapper.map(userDTO, UserDTO.class);
+        User user = userService.findBy(id);
+        return modelMapper.map(user, UserDTO.class);
     }
-
-    public int calculateTotal(List<ProductDTO> productList) {
-        if (productList == null || productList.isEmpty()) {
-            return 0; // Manejo de lista nula o vacía
-        }
-
-        return productList.stream()
-                .filter(product -> product.getPrice() != null && product.getQuantity() != null) // Ignorar productos inválidos
-                .mapToInt(product -> product.getQuantity() * product.getPrice())
-                .sum();
-    }
-
-
 }

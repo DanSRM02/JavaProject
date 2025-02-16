@@ -12,9 +12,11 @@ import java.util.List;
 public class OrderDTO {
 
     private Long id;
-    private Boolean state;
+    private String state;
+    private Boolean priority;
+    private Double total;
     private UserDTO user;
-    private List<ProductDTO> productList;
+    private List<OrderLineDTO> orderLines;
     private Date createdAt;
 
 }

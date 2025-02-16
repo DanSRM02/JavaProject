@@ -40,19 +40,10 @@ public class ProductBusiness {
         //Prepare DTO
         ProductDTO productDTO = new ProductDTO();
 
-        //Foreign key from the request
-        Long productUnitId = request.getLong("unit_id");
-
-        //Search the unit
-        UnitDTO unitDTO = this.getUnitDto(productUnitId);
-
         //Assign data to DTO
         productDTO.setId(0L);
         productDTO.setName(request.getString("name"));
-        productDTO.setQuantity(request.getInt("quantity"));
-        productDTO.setPrice(request.getInt("price"));
         productDTO.setState(request.getBoolean("state"));
-        productDTO.setUnit(unitDTO);
         return productDTO;
     }
 
@@ -117,7 +108,6 @@ public class ProductBusiness {
 
             // Crear la entidad Product y asignar propiedades
             Product product = modelMapper.map(productDTO, Product.class);
-            product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
 
             // Guardar el producto
             this.productService.save(product);
@@ -145,7 +135,6 @@ public class ProductBusiness {
 
             // Crear la entidad Product y asignar propiedades
             Product product = modelMapper.map(productDTO, Product.class);
-            product.setUnit(unitService.findBy(productDTO.getUnit().getId()));
 
             // Guardar el producto actualizado
             this.productService.save(product);

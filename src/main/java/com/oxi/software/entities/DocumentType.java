@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -34,6 +35,7 @@ public class DocumentType {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "documentType")
-    private Individual individual;
+    @OneToMany(mappedBy = "documentType")
+    private List<Individual> individuals;
+
 }

@@ -16,12 +16,20 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "orders")
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_order")
     private Long id;
-    @Column(name = "state", nullable = false)
-    private Boolean state;
+
+    @Column(name = "state", length = 20)
+    private String state;  // PENDING, PRIORITIZED, COMPLETED, etc.
+
+    @Column(name = "priority")
+    private Boolean priority;
+
+    @Column(name = "total")
+    private Double total;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -29,23 +37,18 @@ public class Order {
     private Date createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "update_at")
     private Date updatedAt;
 
     //relations / DONE
-
-    @OneToOne(mappedBy = "order")
-    private Delivery delivery;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn (name = "fk_id_user")
     private User user;
 
-    @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
-    @JoinTable(name = "product_order",
-            joinColumns = @JoinColumn(name = "fk_id_order", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "fk_id_product", nullable = false))
-    private List<Product> productList;
+    // Relación con Product (a través de order_product)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderLine> orderLines;
 
 }

@@ -9,6 +9,7 @@ import lombok.*;
 public class DeliveryDTO {
 
     private Long id;
+    private String deliveryState;
     private OrderDTO order;
     private UserDTO domiciliary ;
 

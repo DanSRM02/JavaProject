@@ -41,4 +41,8 @@ public class OrderService implements Idao<Order, Long> {
     public List<Order> findAll() {
         return this.orderRepository.findAll();
     }
+
+    public List<Order> findAllByState(String state) {
+        return this.orderRepository.findAllByState(state);
+    }
 }

@@ -1,4 +1,4 @@
-package com.oxi.software.controller;
+package com.oxi.software.service;
 
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.font.PdfFontFactory;
@@ -11,7 +11,6 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.oxi.software.dto.PdfOrderDTO;
-import com.oxi.software.dto.ProductDTO;
 import org.springframework.stereotype.Service;
 
 import java.io.FileOutputStream;
@@ -68,12 +67,12 @@ public class PdfService {
         table.addHeaderCell(new Cell().add(new Paragraph("Total").setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)).setFontSize(12)));
 
         // Agregar filas de productos
-        for (ProductDTO product : orderDTO.getProductList()) {
-            table.addCell(new Paragraph(product.getName()).setFontSize(10));
-            table.addCell(new Paragraph("$" + product.getPrice()).setFontSize(10));
-            table.addCell(new Paragraph(String.valueOf(product.getQuantity())).setFontSize(10));
-            table.addCell(new Paragraph("$" + (product.getPrice() * product.getQuantity())).setFontSize(10));
-        }
+//        for (ProductDTO product : orderDTO.getProductList()) {
+//            table.addCell(new Paragraph(product.getName()).setFontSize(10));
+//            table.addCell(new Paragraph("$" + product.getPrice()).setFontSize(10));
+//            table.addCell(new Paragraph(String.valueOf(product.getQuantity())).setFontSize(10));
+//            table.addCell(new Paragraph("$" + (product.getPrice() * product.getQuantity())).setFontSize(10));
+//        }
 
         // Agregar tabla al documento
         document.add(table);

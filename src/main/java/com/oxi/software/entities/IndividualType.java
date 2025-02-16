@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -24,7 +25,7 @@ public class IndividualType {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at",updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
     @UpdateTimestamp
@@ -32,6 +33,7 @@ public class IndividualType {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    @OneToOne(mappedBy = "individualType")
-    private Individual individual;
+    @OneToMany(mappedBy = "individualType")
+    private List<Individual> individuals;
+
 }

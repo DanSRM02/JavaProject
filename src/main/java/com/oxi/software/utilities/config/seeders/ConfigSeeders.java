@@ -76,21 +76,21 @@ public class ConfigSeeders implements CommandLineRunner {
     private List<Unit> getAllUnit() {
         Unit unit1 = Unit.builder()
                 .unitType("Libra")
-                .acronym("Lb")
+                .acronym("LB")
                 .build();
 
         Unit unit2 = Unit.builder()
                 .unitType("Kilo")
-                .acronym("Kg")
+                .acronym("KG")
                 .build();
 
         Unit unit3 = Unit.builder()
                 .unitType("Metro Cúbico")
-                .acronym("m3")
+                .acronym("M3")
                 .build();
         Unit unit4 = Unit.builder()
                 .unitType("Metros Cuadrados")
-                .acronym("m2")
+                .acronym("M2")
                 .build();
 
 
@@ -154,6 +154,11 @@ public class ConfigSeeders implements CommandLineRunner {
                 .description("Vendedor")
                 .build();
 
+        RolType gerente = RolType.builder()
+                .name("Gerente")
+                .description("Gerente")
+                .build();
+
         RolType usuario = RolType.builder()
                 .name("Usuario")
                 .description("Usuario")
@@ -174,6 +179,7 @@ public class ConfigSeeders implements CommandLineRunner {
         roleList.add(vendedor);
         roleList.add(usuario);
         roleList.add(domiciliario);
+        roleList.add(gerente);
         return roleList;
     }
 

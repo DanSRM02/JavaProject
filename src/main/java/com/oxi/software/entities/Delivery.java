@@ -21,28 +21,27 @@ public class Delivery {
     @Column(name = "id_delivery")
     private Long id;
 
-    @CreationTimestamp
+    @Column(name = "delivery_state", length = 20)
+    private String deliveryState;  // READY_TO_DISPATCH, IN_TRANSIT, DELIVERED
+
+    @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at",updatable = false)
     private Date createdAt;
 
-    @UpdateTimestamp
+    @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "update_at")
     private Date updatedAt;
 
     //Relations
-
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order", nullable = false)
     private Order order;
 
+    // Relation with Delivery man
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user", nullable = false)
+    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
     private User user;
 
-    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Purchase> purchases;
 }
 
 
