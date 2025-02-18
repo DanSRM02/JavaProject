@@ -23,7 +23,7 @@ public class User {
     @Column(name = "id_user")
     private Long id;
 
-    @Column(name = "username", length = 25, unique = true)
+    @Column(name = "username", length = 40, unique = true)
     private String username;
 
     @Column(name = "password", length = 254)
@@ -35,19 +35,19 @@ public class User {
     @Column(name = "name", length = 50) // Campo para el nombre
     private String name;
 
-    @Column(name = "email", length = 50, unique = true) // Campo para el correo electrónico
+    @Column(name = "email", length = 50, unique = true)
     private String email;
 
-    @Column(name = "address", length = 100) // Campo para la dirección
+    @Column(name = "address", length = 100)
     private String address;
 
-    @Column(name = "phone", length = 15) // Campo para el número de teléfono
+    @Column(name = "phone", length = 15)
     private String phone;
 
-    @Column(name = "identification_type", length = 20) // Campo para el tipo de identificación
+    @Column(name = "identification_type", length = 20)
     private String identificationType;
 
-    @Column(name = "identification", length = 20) // Campo para el número de identificación
+    @Column(name = "identification", length = 20)
     private String identification;
 
     @CreationTimestamp
@@ -69,7 +69,7 @@ public class User {
     @JoinColumn(name = "fk_id_individual")
     private Individual individual;
 
-    @OneToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_rol_type")
     private RolType rolType;
 

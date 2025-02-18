@@ -93,6 +93,32 @@ public class UserController {
                     HttpStatus.CONFLICT);
         }
     }
+    @PostMapping(path = "/auth/login")
+    public ResponseEntity<Map<String, Object>> loginUser (@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        try {
+            // Llama al negocio para autenticar al usuario
+            UserDTO userDTO = userBusiness.authenticate(email, password);
+            if (userDTO != null) {
+                // Si la autenticación es exitosa, devuelve el usuario
+                Map<String, Object> response = ResponseHttpApi.responseHttpPost("Login successful", HttpStatus.OK);
+                response.put("data", userDTO); // Agregar el UserDTO a la respuesta
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpPost("Invalid credentials", HttpStatus.UNAUTHORIZED),
+                        HttpStatus.UNAUTHORIZED);
+            }
+        } catch (CustomException e) {
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost("Error during login: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR),
+                    HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     @GetMapping("/find/{id}")
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Long id) {

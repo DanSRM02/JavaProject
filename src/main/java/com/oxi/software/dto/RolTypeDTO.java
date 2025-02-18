@@ -1,5 +1,6 @@
 package com.oxi.software.dto;
 
+import com.oxi.software.entities.RolType;
 import lombok.*;
 
 @Data
@@ -12,4 +13,6 @@ public class RolTypeDTO {
     private String name;
     private String description;
 
+    public RolTypeDTO(RolType rolType) {
+    }
 }

@@ -28,6 +28,9 @@ public class UserService implements Idao<User, Long> {
         this.userRepository.save(obje);
         return null;
     }
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
     @Override
     public void saveAll(Iterable<User> obje) {

@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping(path = "/api/v1/oxi/individual", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 @CrossOrigin(origins = "*")
@@ -28,41 +27,33 @@ public class IndividualController {
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> createIndividual(@RequestBody Map<String, Object> productMap) {
         try {
-            // Call Business to create individual
-            individualBusiness.add(productMap);
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Add Individual successfully", HttpStatus.OK),
-                    HttpStatus.OK);
+            Long individualId = individualBusiness.add(productMap);
+            Map<String, Object> response = ResponseHttpApi.responseHttpPost(
+                    "Add Individual successfully", HttpStatus.OK);
+            response.put("id", individualId);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
+                    e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error adding Individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
+                    "Error adding Individual: " + e.getMessage(), HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST);
         }
     }
+
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> updateIndividual(@RequestBody Map<String, Object> productMap, @PathVariable Long id) {
         try {
-            // Call Business to update individual
             individualBusiness.update(productMap, id);
-            // Success response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Update Individual successfully", HttpStatus.OK),
                     HttpStatus.OK);
         } catch (CustomException e) {
-            // Custom exception response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            // General exception response
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error updating Individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);

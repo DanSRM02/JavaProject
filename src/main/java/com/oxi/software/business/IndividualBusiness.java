@@ -96,7 +96,7 @@ public class IndividualBusiness {
 
 
 
-    public void add(Map<String, Object> request) {
+    public Long add(Map<String, Object> request) {
         try {
             // Validar datos y convertir a DTO
             IndividualDTO individualDTO = validateData(request);
@@ -111,10 +111,12 @@ public class IndividualBusiness {
             individual.setIndividualType(individualTypeService.findBy(individualDTO.getIndividualType().getId()));
 
             // Guardar el individual
-            this.individualService.save(individual);
+            Individual savedIndividual = this.individualService.save(individual);
 
             // Log de información sobre la operación exitosa
-            logger.info("Individual added successfully: {}", individual);
+            logger.info("Individual added successfully: {}", savedIndividual);
+
+            return savedIndividual.getId();
 
         } catch (CustomException ce) {
             // Log de error personalizado y relanzamiento de la excepción
@@ -127,6 +129,7 @@ public class IndividualBusiness {
             throw new RuntimeException("Unexpected error occurred while adding individual", e);
         }
     }
+
 
     public void update(Map<String, Object> request, Long id) {
         try {

@@ -1,5 +1,6 @@
 package com.oxi.software.dto;
 
+import com.oxi.software.entities.Individual;
 import lombok.*;
 
 @Data
@@ -18,4 +19,7 @@ public class IndividualDTO {
     //Relations
     private DocumentTypeDTO documentType;
     private IndividualTypeDTO individualType;
+
+    public IndividualDTO(Individual individual) {
+    }
 }

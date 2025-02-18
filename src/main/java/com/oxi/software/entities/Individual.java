@@ -44,11 +44,11 @@ public class Individual {
     @OneToOne(mappedBy = "individual")
     private User user;
 
-    @OneToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "fk_id_individual_type")
     private IndividualType individualType;
 
-    @OneToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.MERGE   )
     @JoinColumn(name = "fk_id_document_type")
     private DocumentType documentType;
 
