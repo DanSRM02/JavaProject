@@ -45,7 +45,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/api/v1/oxi/auth/login").permitAll()
                         .requestMatchers("/api/v1/oxi/individual/add", "/api/v1/oxi/product/add", "/api/v1/oxi/user/add").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtValidator(jwtTokenProvider, userDetailsService),

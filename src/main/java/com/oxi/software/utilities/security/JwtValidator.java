@@ -26,6 +26,12 @@ public class JwtValidator extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        // Ignorar la ruta de inicio de sesión
+        if (request.getRequestURI().equals("/api/v1/oxi/auth/login")) {
+            filterChain.doFilter(request, response); // Continuar sin aplicar el filtro
+            return;
+        }
+
         // Obtener el token del encabezado Authorization
         String token = getTokenFromRequest(request);
 
