@@ -1,5 +1,6 @@
 package com.oxi.software.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderLineDTO {
-    private ProductDTO product;
-    private int quantity;
+    private Long id;
+    private Integer quantity;
+    @JsonProperty("product_variant")
+    private ProductVariantDTO productVariant;
 }
+
 

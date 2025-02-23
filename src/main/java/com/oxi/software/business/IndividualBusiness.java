@@ -1,7 +1,7 @@
 package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
-import com.oxi.software.entities.*;
+import com.oxi.software.entity.*;
 import com.oxi.software.service.DocumentTypeService;
 import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.IndividualTypeService;

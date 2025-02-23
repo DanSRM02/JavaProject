@@ -3,9 +3,9 @@ package com.oxi.software.business;
 import com.oxi.software.dto.ProductDTO;
 import com.oxi.software.dto.ReviewDTO;
 import com.oxi.software.dto.UserDTO;
-import com.oxi.software.entities.Product;
-import com.oxi.software.entities.Review;
-import com.oxi.software.entities.User;
+import com.oxi.software.entity.Product;
+import com.oxi.software.entity.Review;
+import com.oxi.software.entity.User;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.ReviewService;
 import com.oxi.software.service.UserService;
@@ -20,10 +20,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.oxi.software.utilities.Util.getData;

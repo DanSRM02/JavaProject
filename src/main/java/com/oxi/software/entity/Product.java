@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -40,9 +40,6 @@ public class Product {
     // Relaciones existentes
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Review> review;
-
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderLine> orderLines;
 
     // Nueva relación para las variantes del producto
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

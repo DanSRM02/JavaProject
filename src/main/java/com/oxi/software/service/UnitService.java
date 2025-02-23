@@ -1,6 +1,6 @@
 package com.oxi.software.service;
 
-import com.oxi.software.entities.Unit;
+import com.oxi.software.entity.Unit;
 import com.oxi.software.repository.UnitRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UnitService implements Idao<Unit, Long> {

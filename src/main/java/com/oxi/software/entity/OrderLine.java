@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,17 +14,20 @@ public class OrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id_order_line")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
+    @JoinColumn(name = "id_order", nullable = false)
     private Order order;
 
+    // Relación con ProductVariant
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+    @JoinColumn(name = "id_product_variant", nullable = false)
+    private ProductVariant productVariant;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
+
 
 }

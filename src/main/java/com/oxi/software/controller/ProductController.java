@@ -2,8 +2,6 @@ package com.oxi.software.controller;
 
 import com.oxi.software.business.ProductBusiness;
 import com.oxi.software.dto.ProductDTO;
-import com.oxi.software.entities.Product;
-import com.oxi.software.service.ProductService;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;

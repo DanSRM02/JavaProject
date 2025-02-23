@@ -1,9 +1,9 @@
 package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
-import com.oxi.software.entities.Individual;
-import com.oxi.software.entities.RolType;
-import com.oxi.software.entities.User;
+import com.oxi.software.entity.Individual;
+import com.oxi.software.entity.RolType;
+import com.oxi.software.entity.User;
 import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.RolTypeService;
 import com.oxi.software.service.UserService;

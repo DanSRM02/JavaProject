@@ -1,12 +1,12 @@
 package com.oxi.software.business;
 
-import com.oxi.software.dto.OrderDTO;
-import com.oxi.software.dto.OrderLineDTO;
-import com.oxi.software.dto.ProductDTO;
-import com.oxi.software.dto.UserDTO;
-import com.oxi.software.entities.Order;
-import com.oxi.software.entities.ProductVariant;
-import com.oxi.software.entities.User;
+import com.oxi.software.dto.*;
+import com.oxi.software.entity.Order;
+import com.oxi.software.entity.OrderLine;
+import com.oxi.software.entity.ProductVariant;
+import com.oxi.software.entity.User;
+import com.oxi.software.repository.projection.OrderDetailsProjection;
+import com.oxi.software.repository.projection.OrderSummaryProjection;
 import com.oxi.software.service.OrderService;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.ProductVariantService;
@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,7 @@ public class OrderBusiness {
 
     private final OrderService orderService;
     private final UserService userService;
-    private final ProductService productService;
     private final ProductVariantService productVariantService;
-    // Otros servicios (MailService, PdfService) se omiten para simplificar
 
     private static final Logger logger = LogManager.getLogger(Util.class);
     private final ModelMapper modelMapper = new ModelMapper();
@@ -43,7 +42,6 @@ public class OrderBusiness {
     public OrderBusiness(OrderService orderService, UserService userService, ProductService productService, ProductVariantService productVariantService) {
         this.orderService = orderService;
         this.userService = userService;
-        this.productService = productService;
         this.productVariantService = productVariantService;
     }
 
@@ -80,8 +78,14 @@ public class OrderBusiness {
                 throw new CustomException("Producto no encontrado con ID: " + productId, HttpStatus.NOT_FOUND);
             }
 
+            // Imprime el producto en consola
+            System.out.println("Producto encontrado:");
+            System.out.println("ID: " + product.getId());
+            System.out.println("Precio: " + product.getPrice());
+
+
             OrderLineDTO line = OrderLineDTO.builder()
-                    .product(modelMapper.map(product, ProductDTO.class))
+                    .productVariant(modelMapper.map(product, ProductVariantDTO.class))
                     .quantity(quantity)
                     .build();
             orderLines.add(line);
@@ -112,15 +116,22 @@ public class OrderBusiness {
             // 3. Inicializar total en 0
             double total = 0.0;
 
-            // 4. Procesar cada línea de orden: calcular subtotal, validar stock y actualizarlo
-            for (OrderLineDTO line : orderDTO.getOrderLines()) {
-                // Buscar la variante real a partir del producto en la línea
-                ProductVariant variant = productVariantService.findBy(line.getProduct().getId());
-                System.out.println(variant);
-                int quantityRequested = line.getQuantity();
+            // 4. Crear la lista de líneas de orden (OrderLine)
+            List<OrderLine> orderLines = new ArrayList<>();
 
+            // Recorremos cada línea de la orden en el DTO
+            for (OrderLineDTO lineDTO : orderDTO.getOrderLines()) {
+                // Obtenemos el ID del productVariant en lugar del product
+                Long productVariantId = lineDTO.getProductVariant().getId();
+                ProductVariant variant = productVariantService.findBy(productVariantId);
+
+                if (variant == null) {
+                    throw new CustomException("No se encontró la variante con ID: " + productVariantId, HttpStatus.NOT_FOUND);
+                }
+
+                int quantityRequested = lineDTO.getQuantity();
                 if (variant.getQuantity() < quantityRequested) {
-                    throw new CustomException("Stock insuficiente para el producto ID: " + variant.getId(), HttpStatus.BAD_REQUEST);
+                    throw new CustomException("Stock insuficiente para la variante con ID: " + productVariantId, HttpStatus.BAD_REQUEST);
                 }
 
                 // Calcular subtotal y acumular en total
@@ -130,18 +141,27 @@ public class OrderBusiness {
                 // Restar stock y guardar la variante actualizada
                 variant.setQuantity(variant.getQuantity() - quantityRequested);
                 productVariantService.save(variant);
+
+                // Crear la entidad OrderLine
+                OrderLine line = new OrderLine();
+                line.setOrder(order);
+                line.setProductVariant(variant);
+                line.setQuantity(quantityRequested);
+
+                // Agregar la línea a la lista
+                orderLines.add(line);
             }
 
             // 5. Asignar el total calculado a la orden
             order.setTotal(total);
 
-            // 6. Asegurar que cada línea de orden tenga la referencia al Order padre
-            if (order.getOrderLines() != null) {
-                order.getOrderLines().forEach(line -> line.setOrder(order));
-            }
+            // 6. Asignar la lista de líneas a la orden
+            // (suponiendo que en la entidad Order tengas un campo: private List<OrderLine> orderLines)
+            order.setOrderLines(orderLines);
 
-            // 7. Guardar la orden
+            // 7. Guardar la orden (esto persistirá también las líneas)
             orderService.save(order);
+
             logger.info("Order added successfully: {}", order);
 
         } catch (DataIntegrityViolationException ex) {
@@ -156,17 +176,37 @@ public class OrderBusiness {
         }
     }
 
-    public List<OrderDTO> findAllByState(String state) {
+
+    public List<OrderSummaryDTO> findAllByState(String state) {
         try {
-            List<Order> orderList = orderService.findAllByState(state);
+            List<OrderSummaryProjection> orderList = orderService.findAllByState(state);
             if (orderList.isEmpty()) {
                 return List.of();
             }
             return orderList.stream()
-                    .map(order -> modelMapper.map(order, OrderDTO.class))
+                    .map(order -> modelMapper.map(order, OrderSummaryDTO.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new CustomException("Error al obtener órdenes por estado: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public List<OrderDetailsDTO> findDetailsById(Long id) {
+        try {
+
+            if (id == null) {
+             throw new CustomException("Id null", HttpStatus.BAD_REQUEST);
+            }
+
+            List<OrderDetailsProjection> orderList = orderService.findOrderDetailsById(id);
+            if (orderList.isEmpty()) {
+                return List.of();
+            }
+            return orderList.stream()
+                    .map(order -> modelMapper.map(order, OrderDetailsDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

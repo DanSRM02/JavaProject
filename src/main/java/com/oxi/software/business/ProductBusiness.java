@@ -2,8 +2,8 @@ package com.oxi.software.business;
 
 import com.oxi.software.dto.ProductDTO;
 import com.oxi.software.dto.UnitDTO;
-import com.oxi.software.entities.Product;
-import com.oxi.software.entities.Unit;
+import com.oxi.software.entity.Product;
+import com.oxi.software.entity.Unit;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.UnitService;
 import com.oxi.software.utilities.Util;

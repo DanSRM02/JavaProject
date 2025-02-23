@@ -1,7 +1,9 @@
 package com.oxi.software.service;
 
-import com.oxi.software.entities.Order;
+import com.oxi.software.entity.Order;
 import com.oxi.software.repository.OrderRepository;
+import com.oxi.software.repository.projection.OrderDetailsProjection;
+import com.oxi.software.repository.projection.OrderSummaryProjection;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +44,11 @@ public class OrderService implements Idao<Order, Long> {
         return this.orderRepository.findAll();
     }
 
-    public List<Order> findAllByState(String state) {
-        return this.orderRepository.findAllByState(state);
+    public List<OrderSummaryProjection> findAllByState(String state) {
+        return this.orderRepository.findByState(state);
+    }
+
+    public List<OrderDetailsProjection>  findOrderDetailsById(Long id) {
+        return this.orderRepository.findOrderDetailsById(id);
     }
 }

@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -18,7 +19,7 @@ public class ProductVariant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_variant")
+    @Column(name = "id_product_variant")
     private Long id;
 
     @Column(name = "quantity", nullable = false)
@@ -31,6 +32,9 @@ public class ProductVariant {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_product", nullable = false)
     private Product product;
+
+    @OneToMany(mappedBy = "productVariant", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<OrderLine> orderLines;
 
     // Relación con la unidad
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)

@@ -84,7 +84,7 @@ public class UserController {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         null,
                         HttpStatus.NO_CONTENT,
-                        "Individuals not found",
+                        "Users not found",
                         0),
                         HttpStatus.ACCEPTED);
             }

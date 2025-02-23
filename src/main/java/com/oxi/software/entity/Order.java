@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,7 +47,6 @@ public class Order {
     @JoinColumn (name = "fk_id_user")
     private User user;
 
-    // Relación con Product (a través de order_product)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderLine> orderLines;
 

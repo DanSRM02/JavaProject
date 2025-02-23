@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,18 +14,20 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "individual_types")
-public class IndividualType {
+@Table(name = "units")
+public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_individual_type")
+    @Column(name = "id_unit")
     private Long id;
-    @Column(name = "name_individual", nullable = false, length = 15)
-    private String name;
+    @Column(name = "unit_type", unique = true, nullable = false, length = 52)
+    private String unitType;
+    @Column(name = "acronym", nullable = false, length = 52)
+    private String acronym;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at",updatable = false)
     private Date createdAt;
 
     @UpdateTimestamp
@@ -33,7 +35,7 @@ public class IndividualType {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "individualType")
-    private List<Individual> individuals;
-
+    @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<ProductVariant> productVariantList;
 }
+

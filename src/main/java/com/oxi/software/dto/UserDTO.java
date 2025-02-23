@@ -1,6 +1,7 @@
 package com.oxi.software.dto;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
 @Data
@@ -14,5 +15,6 @@ public class UserDTO {
     private String password;
     private Boolean state;
     private IndividualDTO individual;
+    @JsonProperty("rol_type")
     private RolTypeDTO rolType;
 }

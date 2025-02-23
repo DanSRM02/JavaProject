@@ -1,6 +1,6 @@
 package com.oxi.software.service;
 
-import com.oxi.software.entities.Product;
+import com.oxi.software.entity.Product;
 import com.oxi.software.repository.ProductRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;

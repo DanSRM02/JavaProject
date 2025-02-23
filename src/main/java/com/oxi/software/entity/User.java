@@ -1,11 +1,10 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 
 import java.util.Date;
 import java.util.List;
@@ -48,7 +47,7 @@ public class User {
     @JoinColumn(name = "fk_id_individual")
     private Individual individual;
 
-    @OneToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name = "fk_id_rol_type")
     private RolType rolType;
 

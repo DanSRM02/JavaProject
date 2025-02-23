@@ -1,6 +1,7 @@
 package com.oxi.software.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
 @Data
@@ -8,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = "product")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ProductVariantDTO {
     private Long id;
     private Integer quantity;

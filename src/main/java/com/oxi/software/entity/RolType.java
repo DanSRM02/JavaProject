@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,16 +14,16 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "units")
-public class Unit {
+@Table(name = "rol_types")
+public class RolType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_unit")
+    @Column(name = "id_rol_type")
     private Long id;
-    @Column(name = "unit_type", unique = true, nullable = false, length = 52)
-    private String unitType;
-    @Column(name = "acronym", nullable = false, length = 52)
-    private String acronym;
+    @Column(name = "name", nullable = false, length = 55)
+    private String name;
+    @Column(name = "description", length = 254)
+    private String description;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -35,7 +35,6 @@ public class Unit {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "unit", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<ProductVariant> productVariantList;
+    @OneToMany(mappedBy = "rolType")
+    private List<User> users;
 }
-

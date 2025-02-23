@@ -2,6 +2,8 @@ package com.oxi.software.controller;
 
 import com.oxi.software.business.OrderBusiness;
 import com.oxi.software.dto.OrderDTO;
+import com.oxi.software.dto.OrderDetailsDTO;
+import com.oxi.software.dto.OrderSummaryDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,13 +142,13 @@ public class OrderController {
     @GetMapping("/all/{state}")
     public ResponseEntity<Map<String, Object>> getAllOrdersByState(@PathVariable String state) {
         try{
-            List<OrderDTO> orderDTOList = orderBusiness.findAllByState(state);
-            if (!orderDTOList.isEmpty()) {
+            List<OrderSummaryDTO> orderSummaryDTOS = orderBusiness.findAllByState(state);
+            if (!orderSummaryDTOS.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        orderDTOList,
+                        orderSummaryDTOS,
                         HttpStatus.OK,
                         "Successfully Completed",
-                        orderDTOList.size()),
+                        orderSummaryDTOS.size()),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
@@ -159,6 +161,38 @@ public class OrderController {
         }catch (Exception e){
             throw new CustomException("Error getting orders: " + e.getMessage(),
                     HttpStatus.CONFLICT);
+        }
+    }
+
+    @GetMapping("details/{id}")
+    public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Long id) {
+        try{
+            List<OrderDetailsDTO> orderDetailsDTOS = orderBusiness.findDetailsById(id);
+            if (!orderDetailsDTOS.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        orderDetailsDTOS,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        orderDetailsDTOS.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Order details not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error getting order details: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
         }
     }
 }

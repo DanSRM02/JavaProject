@@ -1,6 +1,6 @@
 package com.oxi.software.service;
 
-import com.oxi.software.entities.RolType;
+import com.oxi.software.entity.RolType;
 import com.oxi.software.repository.RolTypeRepository;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;

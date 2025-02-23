@@ -1,6 +1,6 @@
 package com.oxi.software.repository;
 
-import com.oxi.software.entities.ProductVariant;
+import com.oxi.software.entity.ProductVariant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

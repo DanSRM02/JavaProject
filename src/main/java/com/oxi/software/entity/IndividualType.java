@@ -1,4 +1,4 @@
-package com.oxi.software.entities;
+package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -13,20 +14,18 @@ import java.util.Date;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "rol_types")
-public class RolType {
+@Table(name = "individual_types")
+public class IndividualType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_rol_type")
+    @Column(name = "id_individual_type")
     private Long id;
-    @Column(name = "name", nullable = false, length = 55)
+    @Column(name = "name_individual", nullable = false, length = 15)
     private String name;
-    @Column(name = "description", length = 254)
-    private String description;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created_at",updatable = false)
+    @Column(name = "created_at", updatable = false)
     private Date createdAt;
 
     @UpdateTimestamp
@@ -34,7 +33,7 @@ public class RolType {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    // We have to add the relation
-    @OneToOne(mappedBy = "rolType")
-    private User user;
+    @OneToMany(mappedBy = "individualType")
+    private List<Individual> individuals;
+
 }

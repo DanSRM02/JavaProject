@@ -1,9 +1,9 @@
 package com.oxi.software.utilities.config.seeders;
 
-import com.oxi.software.entities.DocumentType;
-import com.oxi.software.entities.IndividualType;
-import com.oxi.software.entities.RolType;
-import com.oxi.software.entities.Unit;
+import com.oxi.software.entity.DocumentType;
+import com.oxi.software.entity.IndividualType;
+import com.oxi.software.entity.RolType;
+import com.oxi.software.entity.Unit;
 import com.oxi.software.repository.DocumentTypeRepository;
 import com.oxi.software.repository.IndividualTypeRepository;
 import com.oxi.software.repository.RolTypeRepository;
