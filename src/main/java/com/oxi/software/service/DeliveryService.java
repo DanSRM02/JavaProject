@@ -23,8 +23,9 @@ public class DeliveryService implements Idao<Delivery, Long> {
     }
 
     @Override
-    public void save(Delivery obje) {
+    public Delivery save(Delivery obje) {
         this.deliveryRepository.save(obje);
+        return obje;
     }
 
     @Override

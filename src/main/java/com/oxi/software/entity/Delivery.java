@@ -15,7 +15,7 @@ import java.util.Date;
 public class Delivery {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_delivery")
+    @Column(name = "delivery_id")
     private Long id;
 
     @Column(name = "delivery_state", length = 20)
@@ -31,12 +31,12 @@ public class Delivery {
 
     //Relations
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "fk_id_order", referencedColumnName = "id_order", nullable = false)
+    @JoinColumn(name = "fk_id_order", referencedColumnName = "order_id", nullable = false)
     private Order order;
 
     // Relation with Delivery man
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "id_user")
+    @JoinColumn(name = "fk_id_user", referencedColumnName = "user_id")
     private User user;
 
 }

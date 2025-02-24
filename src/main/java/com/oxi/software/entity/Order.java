@@ -19,7 +19,7 @@ public class Order {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_order")
+    @Column(name = "order_id")
     private Long id;
 
     @Column(name = "state", length = 20)

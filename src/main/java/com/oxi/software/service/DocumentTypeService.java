@@ -23,8 +23,9 @@ public class DocumentTypeService implements Idao<DocumentType, Long> {
     }
 
     @Override
-    public void save(DocumentType obje) {
+    public DocumentType save(DocumentType obje) {
         this.documentTypeRepository.save(obje);
+        return obje;
     }
 
     @Override

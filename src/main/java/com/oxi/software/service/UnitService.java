@@ -23,8 +23,9 @@ public class UnitService implements Idao<Unit, Long> {
     }
 
     @Override
-    public void save(Unit obje) {
+    public Unit save(Unit obje) {
         this.unitRepository.save(obje);
+        return obje;
     }
 
     @Override

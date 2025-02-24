@@ -23,9 +23,10 @@ public class IndividualService implements Idao<Individual, Long> {
     }
 
     @Override
-    public void save(Individual obje) {
-        this.individualRepository.save(obje);
+    public Individual save(Individual obje) {
+        return this.individualRepository.saveAndFlush(obje);
     }
+
 
     @Override
     public void saveAll(Iterable<Individual> obje) {

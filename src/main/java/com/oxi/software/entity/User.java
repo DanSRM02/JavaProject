@@ -5,7 +5,9 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -19,7 +21,7 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_user")
+    @Column(name = "user_id")
     private Long id;
     @Column(name = "username", length = 25, unique = true)
     private String username;
@@ -38,7 +40,16 @@ public class User {
     @Column(name = "update_at")
     private Date updatedAt;
 
-    //relations / DONE
+    //Spring Boot Configuración
+
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+    @Column(name = "account_no_expired")
+    private boolean accountNoExpired;
+    @Column(name = "account_no_locked")
+    private boolean accountNoLocked;
+    @Column(name = "credentials_no_expired")
+    private boolean credentialsNoExpired;
 
     @OneToOne(mappedBy = "user")
     private Delivery delivery;

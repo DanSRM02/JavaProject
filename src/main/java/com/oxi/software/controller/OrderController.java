@@ -2,7 +2,7 @@ package com.oxi.software.controller;
 
 import com.oxi.software.business.OrderBusiness;
 import com.oxi.software.dto.OrderDTO;
-import com.oxi.software.dto.OrderDetailsDTO;
+import com.oxi.software.dto.OrderDetailDTO;
 import com.oxi.software.dto.OrderSummaryDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
@@ -167,13 +167,13 @@ public class OrderController {
     @GetMapping("details/{id}")
     public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Long id) {
         try{
-            List<OrderDetailsDTO> orderDetailsDTOS = orderBusiness.findDetailsById(id);
-            if (!orderDetailsDTOS.isEmpty()) {
+            List<OrderDetailDTO> orderDetailDTOS = orderBusiness.findDetailsById(id);
+            if (!orderDetailDTOS.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                        orderDetailsDTOS,
+                        orderDetailDTOS,
                         HttpStatus.OK,
                         "Successfully Completed",
-                        orderDetailsDTOS.size()),
+                        orderDetailDTOS.size()),
                         HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(

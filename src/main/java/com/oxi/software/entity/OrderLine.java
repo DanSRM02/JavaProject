@@ -14,16 +14,16 @@ public class OrderLine {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_order_line")
+    @Column(name = "order_line_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_order", nullable = false)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
     // Relación con ProductVariant
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_product_variant", nullable = false)
+    @JoinColumn(name = "product_variant_id", nullable = false)
     private ProductVariant productVariant;
 
     @Column(name = "quantity", nullable = false)

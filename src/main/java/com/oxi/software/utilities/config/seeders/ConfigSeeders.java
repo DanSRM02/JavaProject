@@ -1,18 +1,14 @@
 package com.oxi.software.utilities.config.seeders;
 
-import com.oxi.software.entity.DocumentType;
-import com.oxi.software.entity.IndividualType;
-import com.oxi.software.entity.RolType;
-import com.oxi.software.entity.Unit;
-import com.oxi.software.repository.DocumentTypeRepository;
-import com.oxi.software.repository.IndividualTypeRepository;
-import com.oxi.software.repository.RolTypeRepository;
-import com.oxi.software.repository.UnitRepository;
+import com.oxi.software.entity.*;
+import com.oxi.software.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class ConfigSeeders implements CommandLineRunner {
@@ -22,17 +18,25 @@ public class ConfigSeeders implements CommandLineRunner {
     private final UnitRepository unitRepository;
     private final IndividualTypeRepository individualTypeRepository;
     private final RolTypeRepository rolTypeRepository;
+    private final PermissionRepository permissionRepository;
 
-    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository) {
+    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository, PermissionRepository permissionRepository) {
         this.documentTypeRepository = documentTypeRepository;
         this.individualTypeRepository = individualTypeRepository;
         this.unitRepository = unitRepository;
         this.rolTypeRepository = rolTypeRepository;
+        this.permissionRepository = permissionRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        //Inserts data in the database
+        // Inserta los datos en la base de datos en el orden correcto
+        if (permissionRepository.count() == 0) {
+            permissionRepository.saveAll(getAllPermission());
+        }
+        if (rolTypeRepository.count() == 0) {
+            rolTypeRepository.saveAll(getRole());
+        }
         if (documentTypeRepository.count() == 0) {
             documentTypeRepository.saveAll(getDocumentTypeList());
         }
@@ -42,63 +46,55 @@ public class ConfigSeeders implements CommandLineRunner {
         if (individualTypeRepository.count() == 0) {
             individualTypeRepository.saveAll(getAllIndividualType());
         }
-        if (rolTypeRepository.count() == 0){
-            rolTypeRepository.saveAll(getRole());
-        }
     }
+
 
     // Seeder for document types
     private List<DocumentType> getDocumentTypeList() {
-        DocumentType documentType1 = DocumentType.builder()
+        List<DocumentType> documentTypeList = new ArrayList<>();
+
+        documentTypeList.add(DocumentType.builder()
                 .name("Cédula de ciudadanía")
                 .acronym("C.C")
-                .build();
+                .build());
 
-        DocumentType documentType2 = DocumentType.builder()
-                .name("Cédula de extranjería")
-                .acronym("C.E")
-                .build();
-
-        DocumentType documentType3 = DocumentType.builder()
+        documentTypeList.add(DocumentType.builder()
                 .name("Número de Identificación Tributaria")
                 .acronym("NIT")
-                .build();
+                .build());
 
+        documentTypeList.add(DocumentType.builder()
+                .name("Cédula de extranjería")
+                .acronym("C.E")
+                .build());
 
-        List<DocumentType> documentTypeList = new ArrayList<>();
-        documentTypeList.add(documentType1);
-        documentTypeList.add(documentType2);
-        documentTypeList.add(documentType3);
         return  documentTypeList;
     }
 
     // Seeder for unit types
     private List<Unit> getAllUnit() {
-        Unit unit1 = Unit.builder()
+        List<Unit> unitList = new ArrayList<>();
+
+        unitList.add(Unit.builder()
                 .unitType("Libra")
                 .acronym("LB")
-                .build();
+                .build());
 
-        Unit unit2 = Unit.builder()
+        unitList.add(Unit.builder()
                 .unitType("Kilo")
                 .acronym("KG")
-                .build();
+                .build());
 
-        Unit unit3 = Unit.builder()
+        unitList.add(Unit.builder()
                 .unitType("Metro Cúbico")
                 .acronym("M3")
-                .build();
-        Unit unit4 = Unit.builder()
+                .build());
+
+        unitList.add(Unit.builder()
                 .unitType("Metros Cuadrados")
                 .acronym("M2")
-                .build();
+                .build());
 
-
-        List<Unit> unitList = new ArrayList<>();
-        unitList.add(unit1);
-        unitList.add(unit2);
-        unitList.add(unit3);
-        unitList.add(unit4);
         return  unitList;
     }
 
@@ -106,82 +102,112 @@ public class ConfigSeeders implements CommandLineRunner {
 
     private List<IndividualType> getAllIndividualType() {
 
-        IndividualType individualType1 = IndividualType.builder()
-                .name("Persona")
-                .build();
-
-        IndividualType individualType2 = IndividualType.builder()
-                .name("Empresa")
-                .build();
-
         List<IndividualType> individualTypeList = new ArrayList<>();
-        individualTypeList.add(individualType1);
-        individualTypeList.add(individualType2);
+
+        individualTypeList.add(IndividualType.builder()
+                .name("Persona")
+                .build());
+
+        individualTypeList.add(IndividualType.builder()
+                .name("Empresa")
+                .build());
 
         return individualTypeList;
     }
 
-//   //seeder persmisos
-//    private  List<PermissionEntity> getPermisos() {
-//        PermissionEntity create = PermissionEntity.builder()
-//                .id(1L)
-//                .name("CREATE")
-//                .build();
-//        PermissionEntity update = PermissionEntity.builder()
-//                .id(2L)
-//                .name("UPDATE")
-//                .build();
-//        PermissionEntity delete = PermissionEntity.builder()
-//                .id(3L)
-//                .name("DELETE")
-//                .build();
-//        PermissionEntity read = PermissionEntity.builder()
-//                .id(4L)
-//                .name("READ")
-//                .build();
-//        List<PermissionEntity> permissionEntityList=new ArrayList<>();
-//        permissionEntityList.add(create);
-//        permissionEntityList.add(update);
-//        permissionEntityList.add(delete);
-//        permissionEntityList.add(read);
-//        return permissionEntityList;
-//    }
+   //seeder for permissions
+   private List<Permission> getAllPermission() {
+       List<Permission> permissionList = new ArrayList<>();
 
-    // Seeder for Rol
-    private  List<RolType> getRole() {
-        RolType vendedor = RolType.builder()
-                .name("Vendedor")
-                .description("Vendedor")
-                .build();
+       permissionList.add(Permission.builder()
+               .name("CREATE")
+               .build());
 
-        RolType gerente = RolType.builder()
-                .name("Gerente")
-                .description("Gerente")
-                .build();
+       permissionList.add(Permission.builder()
+               .name("UPDATE")
+               .build());
 
-        RolType usuario = RolType.builder()
-                .name("Usuario")
-                .description("Usuario")
-                .build();
+       permissionList.add(Permission.builder()
+               .name("DELETE")
+               .build());
 
-        RolType domiciliario = RolType.builder()
-                .name("Domiciliario")
-                .description("Domiciliario")
-                .build();
+       permissionList.add(Permission.builder()
+               .name("READ")
+               .build());
 
-//      List<PermissionEntity> rolesPermisos = this.getPermisos();
-//        List<String> permisosPermitidosCordinator = Arrays.asList("CREATE", "READ", "UPDATE");
-//        List<PermissionEntity> rolesPermisosCordinator = rolesPermisos.stream()
-//                .filter(permissionEntity -> permissionEntity.getName().equals("CREATE")|| permissionEntity.getName().equals("UPDATE")|| permissionEntity.getName().equals("READ"))
-//                .collect(Collectors.toList());
+       permissionList.add(Permission.builder()
+               .name("REFACTOR")
+               .build());
+
+       return permissionList;
+   }
+
+    // Seeder para RolType con asignación de permisos usando findByName en PermissionRepository
+    private List<RolType> getRole() {
+        // Recupera los permisos por nombre; se lanza excepción si alguno no se encuentra.
+        Permission create = permissionRepository.findByName("CREATE")
+                .orElseThrow(() -> new RuntimeException("Permiso CREATE no encontrado"));
+        Permission update = permissionRepository.findByName("UPDATE")
+                .orElseThrow(() -> new RuntimeException("Permiso UPDATE no encontrado"));
+        Permission delete = permissionRepository.findByName("DELETE")
+                .orElseThrow(() -> new RuntimeException("Permiso DELETE no encontrado"));
+        Permission read   = permissionRepository.findByName("READ")
+                .orElseThrow(() -> new RuntimeException("Permiso READ no encontrado"));
+        Permission refactor   = permissionRepository.findByName("REFACTOR")
+                .orElseThrow(() -> new RuntimeException("Permiso Refactor no encontrado"));
+
+        // Define el conjunto de permisos comunes (sin DELETE)
+        Set<Permission> commonPermissions = new HashSet<>();
+        commonPermissions.add(create);
+        commonPermissions.add(update);
+        commonPermissions.add(read);
+
+        // Para el rol de Gerente se asignan todos los permisos (incluyendo DELETE)
+        Set<Permission> adminPermissions = new HashSet<>(commonPermissions);
+        adminPermissions.add(delete);
+
+        Set<Permission> developerPermissions = new HashSet<>(adminPermissions);
+        developerPermissions.add(refactor);
 
         List<RolType> roleList = new ArrayList<>();
+
+        // Se crean los roles y se les asignan los permisos
+        RolType vendedor = RolType.builder()
+                .name("VENDEDOR")
+                .description("Vendedor: puede leer, crear y actualizar")
+                .build();
+        vendedor.setPermissions(commonPermissions);
+
+        RolType cliente = RolType.builder()
+                .name("CLIENTE")
+                .description("Cliente: puede leer, crear y actualizar")
+                .build();
+        cliente.setPermissions(commonPermissions);
+
+        RolType domiciliario = RolType.builder()
+                .name("DOMICILIARIO")
+                .description("Domiciliario: puede leer, crear y actualizar")
+                .build();
+        domiciliario.setPermissions(commonPermissions);
+
+        RolType gerente = RolType.builder()
+                .name("GERENTE")
+                .description("Gerente: puede leer, crear, eliminar y actualizar")
+                .build();
+        gerente.setPermissions(adminPermissions);
+
+        RolType desarrollador = RolType.builder()
+                .name("DESARROLLADOR")
+                .description("Desarrollador: tiene todos los permisos")
+                .build();
+        desarrollador.setPermissions(developerPermissions);
+
         roleList.add(vendedor);
-        roleList.add(usuario);
+        roleList.add(cliente);
         roleList.add(domiciliario);
         roleList.add(gerente);
+        roleList.add(desarrollador);
+
         return roleList;
     }
-
-
 }

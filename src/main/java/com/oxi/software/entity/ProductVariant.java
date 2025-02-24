@@ -19,7 +19,7 @@ public class ProductVariant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_product_variant")
+    @Column(name = "product_variant_id")
     private Long id;
 
     @Column(name = "quantity", nullable = false)

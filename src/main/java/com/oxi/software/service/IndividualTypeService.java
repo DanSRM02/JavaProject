@@ -23,8 +23,9 @@ public class IndividualTypeService implements Idao<IndividualType, Long> {
     }
 
     @Override
-    public void save(IndividualType obje) {
+    public IndividualType save(IndividualType obje) {
         this.individualTypeRepository.save(obje);
+        return obje;
     }
 
     @Override

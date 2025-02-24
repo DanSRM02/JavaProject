@@ -18,7 +18,7 @@ import java.util.List;
 public class DocumentType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_document_type")
+    @Column(name = "document_type_id")
     private Long id;
     @Column(name = "name", length = 55)
     private String name;

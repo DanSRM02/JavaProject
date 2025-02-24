@@ -23,8 +23,9 @@ public class ProductVariantService implements Idao<ProductVariant, Long> {
     }
 
     @Override
-    public void save(ProductVariant obje) {
+    public ProductVariant save(ProductVariant obje) {
         this.productVariantRepository.save(obje);
+        return obje;
     }
 
     @Override

@@ -23,8 +23,9 @@ public class ProductService implements Idao<Product, Long> {
     }
 
     @Override
-    public void save(Product obje) {
+    public Product save(Product obje) {
         this.productRepository.save(obje);
+        return obje;
     }
 
     @Override

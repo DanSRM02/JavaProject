@@ -13,7 +13,7 @@ public class IndividualDTO {
     private String name;
     private String email;
     private String address;
-    private Long document;
+    private String document;
     private String phone;
 
     //Relations

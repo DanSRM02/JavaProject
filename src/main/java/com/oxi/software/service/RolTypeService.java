@@ -23,8 +23,9 @@ public class RolTypeService implements Idao<RolType, Long> {
     }
 
     @Override
-    public void save(RolType obje) {
+    public RolType save(RolType obje) {
         this.rolTypeRepository.save(obje);
+        return obje;
     }
 
     @Override

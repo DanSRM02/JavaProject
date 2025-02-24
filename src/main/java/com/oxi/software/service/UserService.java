@@ -23,8 +23,9 @@ public class UserService implements Idao<User, Long> {
     }
 
     @Override
-    public void save(User obje) {
+    public User save(User obje) {
         this.userRepository.save(obje);
+        return obje;
     }
 
     @Override

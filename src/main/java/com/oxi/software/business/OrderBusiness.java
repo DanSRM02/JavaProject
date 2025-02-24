@@ -18,7 +18,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONStringer;
 import org.modelmapper.ModelMapper;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -191,7 +190,7 @@ public class OrderBusiness {
         }
     }
 
-    public List<OrderDetailsDTO> findDetailsById(Long id) {
+    public List<OrderDetailDTO> findDetailsById(Long id) {
         try {
 
             if (id == null) {
@@ -203,7 +202,7 @@ public class OrderBusiness {
                 return List.of();
             }
             return orderList.stream()
-                    .map(order -> modelMapper.map(order, OrderDetailsDTO.class))
+                    .map(order -> modelMapper.map(order, OrderDetailDTO.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -8,7 +8,7 @@ public interface Idao<T,ID>{
 
     public T findBy(ID id);
     @Transactional
-    public  void save(T obje);
+    public  T save(T obje);
 
     @Transactional
     public void saveAll(Iterable<T> obje);

@@ -71,30 +71,27 @@ public class UserBusiness {
         return userDTO;
     }
 
-    public void add(Map<String, Object> json) {
+    public UserDTO add(UserDTO userDTO) throws CustomException {
         try {
-            // Validar datos y convertir a DTO
-            UserDTO userDTO = validateData(json);
-
-            // Crear la entidad User y asignar propiedades
+            // Convertir el DTO a entidad User
             User user = modelMapper.map(userDTO, User.class);
 
-            // Asignar claves foráneas
+            // Asignar claves foráneas: rol y individual
             user.setRolType(rolTypeService.findBy(userDTO.getRolType().getId()));
             user.setIndividual(individualService.findBy(userDTO.getIndividual().getId()));
 
-            // Guardar usuario
-            this.userService.save(user);
+            // Guardar el usuario y obtener la entidad persistida
+            user = this.userService.save(user);
 
-            // Log información sobre la operación exitosa
             logger.info("User added successfully: {}", user);
 
+            // Mapear la entidad persistida a DTO para retornar datos finales
+            return modelMapper.map(user, UserDTO.class);
+
         } catch (CustomException ce) {
-            // Log de error personalizado y relanzamiento de la excepción
             logger.error("Custom error: {}", ce.getMessage(), ce);
             throw new CustomException("Error to create user", ce.getStatus());
         } catch (Exception e) {
-            // Log de error inesperado y relanzamiento de la excepción
             logger.error("Unexpected error occurred while adding user", e);
             throw new RuntimeException("Unexpected error occurred while adding user", e);
         }

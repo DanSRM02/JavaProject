@@ -25,28 +25,6 @@ public class UserController {
         this.userBusiness = userBusiness;
     }
 
-    @PostMapping(path = "/add")
-    public ResponseEntity<Map<String, Object>> addUser(@RequestBody Map<String, Object> json) {
-        try {
-            // Call Business to add User
-            userBusiness.add(json);
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "User added successfully", HttpStatus.OK),
-                    HttpStatus.OK);
-        } catch (CustomException e) {
-            // Custom exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // General exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error adding user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @PutMapping(path = "/update/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@RequestBody Map<String, Object> json, @PathVariable Long id) {
         try {

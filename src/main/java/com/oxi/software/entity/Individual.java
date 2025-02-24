@@ -16,8 +16,8 @@ import java.util.Date;
 @Table(name = "individuals")
 public class Individual {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_individual")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "individual_id")
     private Long id;
     @Column(name = "name", length = 100)
     private String name;
@@ -26,7 +26,7 @@ public class Individual {
     @Column (name = "address", length = 100)
     private String address;
     @Column (name = "document", unique = true)
-    private Long document;
+    private String document;
     @Column (name = "phone", length = 20)
     private String phone;
 

@@ -23,8 +23,9 @@ public class ReviewService implements Idao<Review, Long> {
     }
 
     @Override
-    public void save(Review obje) {
+    public Review save(Review obje) {
         this.reviewRepository.save(obje);
+        return obje;
     }
 
     @Override

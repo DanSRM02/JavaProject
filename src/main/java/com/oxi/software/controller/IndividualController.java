@@ -14,7 +14,8 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/individual", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
+@RequestMapping(path = "/api/v1/oxi/individual",
+        method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.OPTIONS})
 @CrossOrigin(origins = "*")
 public class IndividualController {
 
@@ -25,7 +26,7 @@ public class IndividualController {
         this.individualBusiness = individualBusiness;
     }
 
-    @PostMapping("/add")
+    @PostMapping(path = "/add")
     public ResponseEntity<Map<String, Object>> createIndividual(@RequestBody Map<String, Object> productMap) {
         try {
             // Call Business to create individual
@@ -47,7 +48,7 @@ public class IndividualController {
         }
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(path = "/update/{id}")
     public ResponseEntity<Map<String, Object>> updateIndividual(@RequestBody Map<String, Object> productMap, @PathVariable Long id) {
         try {
             // Call Business to update individual
@@ -69,7 +70,7 @@ public class IndividualController {
         }
     }
 
-    @GetMapping("/all")
+    @GetMapping(path = "/all")
     public ResponseEntity<Map<String, Object>> getAllIndividuals() {
         try{
             List<IndividualDTO> individualDTOSList = individualBusiness.findAll();
@@ -94,7 +95,7 @@ public class IndividualController {
         }
     }
 
-    @GetMapping("/find/{id}")
+    @GetMapping(path = "/find/{id}")
     public ResponseEntity<Map<String, Object>> getIndividualById(@PathVariable Long id) {
         try{
             IndividualDTO individualDTO = individualBusiness.findBy(id);

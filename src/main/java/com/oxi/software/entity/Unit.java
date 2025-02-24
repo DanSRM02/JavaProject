@@ -18,7 +18,7 @@ import java.util.List;
 public class Unit {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id_unit")
+    @Column(name = "unit_id")
     private Long id;
     @Column(name = "unit_type", unique = true, nullable = false, length = 52)
     private String unitType;

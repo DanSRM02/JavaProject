@@ -13,6 +13,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -25,7 +27,7 @@ public class IndividualBusiness {
     private final DocumentTypeService documentTypeService;
     private final IndividualService individualService;
 
-    public IndividualBusiness(IndividualTypeService individualTypeService, DocumentTypeService documentTypeService, IndividualService individualService) {
+    public IndividualBusiness(IndividualTypeService individualTypeService, DocumentTypeService documentTypeService, IndividualService individualService, UserBusiness userBusiness) {
         this.individualTypeService = individualTypeService;
         this.documentTypeService = documentTypeService;
         this.individualService = individualService;
@@ -39,15 +41,17 @@ public class IndividualBusiness {
         JSONObject request = Util.getData(data);
         //Prepare DTO
         IndividualDTO individualDTO = new IndividualDTO();
-        logger.debug(individualDTO.toString());
-        System.out.println(individualDTO);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+        long documentValue = request.getLong("document");
+        String hashedDocument = passwordEncoder.encode(Long.toString(documentValue));
+        individualDTO.setDocument(hashedDocument);
 
         //Assign data to DTO
         individualDTO.setId(0L);
         individualDTO.setName(request.getString("name"));
         individualDTO.setAddress(request.getString("address"));
         individualDTO.setPhone(request.getString("phone"));
-        individualDTO.setDocument(request.getLong("document"));
         individualDTO.setEmail(request.getString("email"));
 
         //Search document type and assing to DTO
@@ -60,7 +64,6 @@ public class IndividualBusiness {
         IndividualTypeDTO individualTypeDTO = getIndividualTypeDTO(individualTypeId);
         individualDTO.setIndividualType(individualTypeDTO);
 
-        System.out.println(individualDTO);
         return individualDTO;
     }
 
@@ -95,13 +98,12 @@ public class IndividualBusiness {
     }
 
 
-
-    public void add(Map<String, Object> request) {
+    public IndividualDTO add(Map<String, Object> request) {
         try {
             // Validar datos y convertir a DTO
             IndividualDTO individualDTO = validateData(request);
 
-            // Crear la entidad Individual y asignar propiedades
+            // Mapear a entidad Individual
             Individual individual = modelMapper.map(individualDTO, Individual.class);
 
             // Asignar claves foráneas - Tipo de Documento
@@ -110,19 +112,24 @@ public class IndividualBusiness {
             // Asignar tipo de Individual
             individual.setIndividualType(individualTypeService.findBy(individualDTO.getIndividualType().getId()));
 
-            // Guardar el individual
-            this.individualService.save(individual);
+            // Guardar el individual y obtener la entidad persistida
+            individual = this.individualService.save(individual);
 
-            // Log de información sobre la operación exitosa
+
+            // Asegurarse de que se haya generado el ID y asignarlo al DTO
+            if (individual.getId() == null || individual.getId() == 0L) {
+                throw new CustomException("Error: el id generado es 0 o nulo", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            individualDTO = modelMapper.map(individual, IndividualDTO.class);
+            individualDTO.setId(individual.getId()); // Asignar el id generado
+
             logger.info("Individual added successfully: {}", individual);
+            return individualDTO;
 
         } catch (CustomException ce) {
-            // Log de error personalizado y relanzamiento de la excepción
             logger.error("Custom error: {}", ce.getMessage(), ce);
             throw new CustomException("Error adding individual", HttpStatus.INTERNAL_SERVER_ERROR);
-
         } catch (Exception e) {
-            // Log de error inesperado y relanzamiento de la excepción
             logger.error("Unexpected error occurred while adding individual", e);
             throw new RuntimeException("Unexpected error occurred while adding individual", e);
         }

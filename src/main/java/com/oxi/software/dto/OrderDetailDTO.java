@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderDetailsDTO {
+public class OrderDetailDTO {
 
     @JsonProperty("product_name")
     private String productName;
