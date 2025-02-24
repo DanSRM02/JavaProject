@@ -7,6 +7,7 @@ import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class UserService implements Idao<User, Long> {
     @Override
     public User findBy(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-            new CustomException("User with id "+ id + " Not Found ", HttpStatus.NO_CONTENT));
+                new CustomException("User with id " + id + " Not Found", HttpStatus.NO_CONTENT));
     }
 
     @Override
@@ -28,10 +29,15 @@ public class UserService implements Idao<User, Long> {
         this.userRepository.save(obje);
         return null;
     }
+
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
+    }
     @Override
     public void saveAll(Iterable<User> obje) {
         this.userRepository.saveAll(obje);
