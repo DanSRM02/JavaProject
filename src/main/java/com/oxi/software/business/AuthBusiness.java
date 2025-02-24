@@ -1,12 +1,27 @@
 package com.oxi.software.business;
 
-import com.oxi.software.dto.IndividualDTO;
-import com.oxi.software.dto.RolTypeDTO;
-import com.oxi.software.dto.UserDTO;
+import com.oxi.software.dto.*;
+import com.oxi.software.entity.Individual;
+import com.oxi.software.entity.User;
+import com.oxi.software.service.AuthService;
+import com.oxi.software.utilities.Util;
+import com.oxi.software.utilities.exception.CustomException;
+import com.oxi.software.utilities.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -14,13 +29,27 @@ public class AuthBusiness  {
 
     private final IndividualBusiness individualBusiness;
     private final UserBusiness userBusiness;
+    private final AuthService authService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
     // Valor por defecto en caso de que no se envíe rol (por ejemplo, rol de cliente)
     private static final Long DEFAULT_ROL_TYPE_ID = 1L;
 
-    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness) {
+    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.individualBusiness = individualBusiness;
         this.userBusiness = userBusiness;
+        this.authService = authService;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    private AuthDTO validateData(Map<String, Object> request){
+        AuthDTO authDTO = new AuthDTO();
+        JSONObject data = Util.getData(request);
+        authDTO.setUsername(data.getString("username"));
+        authDTO.setPassword(data.getString("password"));
+        return authDTO;
     }
 
     @Transactional
@@ -54,8 +83,70 @@ public class AuthBusiness  {
         userBusiness.add(userDTO);
     }
 
-    public void validateCredentials(Map<String, Object> json) {
+    public AuthResponseDTO loginUser (Map<String, Object> json){
+        try{
+            AuthDTO authDTO = validateData(json);
 
+            String username = authDTO.getUsername();
+            String password = authDTO.getPassword();
+
+            Authentication authentication = this.authentication(username, password);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String accessToken = jwtTokenProvider.createToken(authentication);
+
+            return new AuthResponseDTO(
+                    accessToken,
+                    "",
+                    username
+            );
+        } catch (CustomException ce){
+            throw new CustomException("Invalid credentials provided.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    protected Authentication authentication(String username, String password){
+
+        UserDetails userFound = userFinder(username);
+
+        if(userFound == null){
+            throw new BadCredentialsException("Invalid username or password");
+        }
+
+        if (!passwordEncoder.matches(password, userFound.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+
+        return new UsernamePasswordAuthenticationToken(username, password, userFound.getAuthorities());
+    }
+
+    protected UserDetails userFinder(String username){
+
+        if (username == null) {
+            throw new CustomException("The document provided must not be null", HttpStatus.NO_CONTENT);
+        }
+
+        boolean existsUser = authService.existsUser(username);
+
+        if (existsUser){
+            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            User user = authService.findByUsername(username);
+
+            authorities.add(new SimpleGrantedAuthority("ROLE_".concat(user.getRolType().getName())));
+
+            user.getRolType().getPermissions()
+                    .forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission.getName())));
+
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.isEnabled(),
+                    user.isAccountNoExpired(),
+                    user.isCredentialsNoExpired(),
+                    user.isAccountNoLocked(),
+                    authorities
+            );
+        }
+        return null;
     }
 
 }

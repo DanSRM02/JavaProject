@@ -39,6 +39,8 @@ public class SecurityConfig {
                         http -> {
                             // Rutas públicas
                             http.requestMatchers("api/v1/oxi/auth/register").permitAll();
+                            http.requestMatchers("api/v1/oxi/product/all").permitAll();
+                            http.requestMatchers("api/v1/oxi/auth/login").permitAll();
                             http.requestMatchers("api/v1/oxi/individual-type/all").permitAll();
                             http.requestMatchers("api/v1/oxi/document-type/all").permitAll();
 

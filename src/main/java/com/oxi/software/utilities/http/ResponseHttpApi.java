@@ -15,17 +15,29 @@ public class ResponseHttpApi {
     //findAll
     public static Map<String, Object> responseHttpFindAll(Object data, HttpStatus code, String msm, int size) {
         Map<String, Object> response = new HashMap<>();
+
         response.put("date", new Date());
         response.put("code", code);
         response.put("message", msm);
         response.put("totalItems", size);
         response.put("data", data);
+        return response;
+    }
+
+    public static Map<String, Object> responseHttpAuth(HttpStatus code, String msm, String jwt) {
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("date", new Date());
+        response.put("code", code);
+        response.put("message", msm);
+        response.put("jwt", jwt);
 
         return response;
     }
-//
+
 //    public static Map<String, Object> responseHttpFind(Object data, HttpStatus code,String msm, int size, int page, int items) {
 //        Map<String, Object> response = new HashMap<>();
+
 //        response.put("date", new Date());
 //        response.put("code", code);
 //        response.put("message", msm);
@@ -33,20 +45,18 @@ public class ResponseHttpApi {
 //        response.put("totalItems", items);
 //        response.put("totalPages", size);
 //        response.put("data",data);
-//
 //        return response;
 //    }
-//
-//    //findById
+
+    //findById
     public static Map<String, Object> responseHttpFindId(Object data, String code,String msm) {
         Map<String, Object> response = responseHttpAction(code, msm);
-        response.put("data",data);
 
+        response.put("data",data);
         return response;
     }
 
     public static Map<String, Object> responseHttpAction(String code, String msm) {
-
         Map<String,Object> response = new HashMap<>();
 
         response.put("date",new Date());
@@ -57,8 +67,8 @@ public class ResponseHttpApi {
 
     //Post
     public static Map<String,Object> responseHttpPost(String result, HttpStatus codeMessage){
-
         Map<String, Object> response = new HashMap<>();
+
         response.put("date",new Date());
         response.put("code",codeMessage.value());
         response.put("message",result);
@@ -67,22 +77,13 @@ public class ResponseHttpApi {
     }
 
 //    public static Map<String,Object> responseHttpPut(String result, HttpStatus codeMessage){
-//
 //        Map<String, Object> response = new HashMap<>();
+
 //        response.put("date",new Date());
 //        response.put("code",codeMessage.value());
 //        response.put("message",result);
 //        return response;
 //
-//    }
-//
-//    public static Map<String, Object> responseHttpMassive(String code, String message, Map<String, Object> result) {
-//        Map<String, Object> response = new HashMap<>();
-//        response.put("code", code);
-//        response.put("message", message);
-//        response.put("successCount", result.get("successCount"));
-//        response.put("errors", result.get("errors"));
-//        return response;
 //    }
 //
 //    //Error
@@ -93,7 +94,6 @@ public class ResponseHttpApi {
 //        response.put("code",codeMessage.value());
 //        response.put("message",result);
 //        response.put("data",data);
-//
 //        return response;
 //    }
 

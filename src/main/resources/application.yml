@@ -6,8 +6,8 @@ spring:
     name: oxi-project
   datasource:
     url: jdbc:postgresql://localhost:5432/project
-    username: "postgres"
-    password: "admin"
+    username: "fabrica"
+    password: "fabrica2024*"
     driver-class-name: org.postgresql.Driver
     hikari:
       auto-commit: false

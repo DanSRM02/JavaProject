@@ -1,6 +1,7 @@
 package com.oxi.software.controller;
 
 import com.oxi.software.business.AuthBusiness;
+import com.oxi.software.dto.AuthResponseDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +26,11 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, Object> json) {
         try {
             // Call Business to add User
-            authBusiness.validateCredentials(json);
+            AuthResponseDTO authResponseDTO = authBusiness.loginUser(json);
+            String token = authResponseDTO.getToken();
             // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "User added successfully", HttpStatus.OK),
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpAuth(
+                    HttpStatus.OK,"User added successfully", token ),
                     HttpStatus.OK);
         } catch (CustomException e) {
             // Custom exception response
