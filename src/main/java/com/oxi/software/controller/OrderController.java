@@ -25,7 +25,7 @@ public class OrderController {
         this.orderBusiness = orderBusiness;
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping( "/add")
     public ResponseEntity<Map<String, Object>> addOrder(@RequestBody Map<String, Object> json) {
         try {
             // Call Business to add Order
@@ -70,7 +70,7 @@ public class OrderController {
 //        }
 //    }
 
-    @PutMapping(path = "/update/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<Map<String, Object>> updateOrder(@RequestBody Map<String, Object> json, @PathVariable Long id) {
         try {
             // Call Business to update Order
@@ -164,7 +164,7 @@ public class OrderController {
         }
     }
 
-    @GetMapping("details/{id}")
+    @GetMapping("/details/{id}")
     public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Long id) {
         try{
             List<OrderDetailDTO> orderDetailDTOS = orderBusiness.findDetailsById(id);

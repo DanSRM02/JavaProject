@@ -48,7 +48,7 @@ public class JwtValidator extends OncePerRequestFilter {
             String jwtToken = token.substring(7);
 
             //Conseguimos el token decodificado
-            DecodedJWT decodedJWT = jwtTokenProvider.verifyToken(token);
+            DecodedJWT decodedJWT = jwtTokenProvider.verifyToken(jwtToken);
 
             //Accedemos al sujeto que esta en token
             String username = decodedJWT.getSubject();

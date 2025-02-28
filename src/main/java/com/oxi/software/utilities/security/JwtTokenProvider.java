@@ -13,6 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,10 +28,14 @@ public class JwtTokenProvider {
 
     // Generar un token JWT
     public String createToken(Authentication authentication) {
-        Algorithm algorithm = Algorithm.HMAC256(this.secretKey);
+        Algorithm algorithm = Algorithm.HMAC256(this.secretKey.trim());
 
         //Usuario
         String username = authentication.getPrincipal().toString();
+        List<String> roles = authentication.getAuthorities().stream()
+                .map(auth -> auth.getAuthority())
+                .filter(role -> role.startsWith("ROLE"))
+                .collect(Collectors.toList());
 
         String authorities = authentication.getAuthorities()
                 .stream()
@@ -41,6 +46,7 @@ public class JwtTokenProvider {
                 .withIssuer(this.userGenerator)
                 .withSubject(username)
                 .withClaim("authorities", authorities)
+                .withClaim("role", roles)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 24000000))
                 .withJWTId(UUID.randomUUID().toString())
@@ -51,7 +57,7 @@ public class JwtTokenProvider {
 
     public DecodedJWT verifyToken(String token) {
       try{
-          Algorithm algorithm = Algorithm.HMAC256(this.secretKey);
+          Algorithm algorithm = Algorithm.HMAC256(this.secretKey.trim());
 
           JWTVerifier verifier = JWT.require(algorithm)
                   .withIssuer(this.userGenerator)
