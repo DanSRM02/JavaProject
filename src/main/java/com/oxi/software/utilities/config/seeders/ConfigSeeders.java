@@ -19,13 +19,15 @@ public class ConfigSeeders implements CommandLineRunner {
     private final IndividualTypeRepository individualTypeRepository;
     private final RolTypeRepository rolTypeRepository;
     private final PermissionRepository permissionRepository;
+    private final ProductRepository productRepository;
 
-    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository, PermissionRepository permissionRepository) {
+    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository, PermissionRepository permissionRepository, ProductRepository productRepository) {
         this.documentTypeRepository = documentTypeRepository;
         this.individualTypeRepository = individualTypeRepository;
         this.unitRepository = unitRepository;
         this.rolTypeRepository = rolTypeRepository;
         this.permissionRepository = permissionRepository;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -45,6 +47,9 @@ public class ConfigSeeders implements CommandLineRunner {
         }
         if (individualTypeRepository.count() == 0) {
             individualTypeRepository.saveAll(getAllIndividualType());
+        }
+        if (productRepository.count() == 0){
+            productRepository.saveAll(getProduct());
         }
     }
 
@@ -113,6 +118,23 @@ public class ConfigSeeders implements CommandLineRunner {
                 .build());
 
         return individualTypeList;
+    }
+
+    private List<Product> getProduct() {
+
+        List<Product> ProductList = new ArrayList<>();
+
+        ProductList.add(Product.builder()
+                .name("Oxigeno")
+                .state(true)
+                .build());
+
+        ProductList.add(Product.builder()
+                .name("Árgon")
+                .state(true)
+                .build());
+
+        return ProductList;
     }
 
    //seeder for permissions

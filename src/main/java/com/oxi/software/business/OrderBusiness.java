@@ -209,6 +209,23 @@ public class OrderBusiness {
         }
     }
 
+    public List<OrderDTO> findOrdersByUserId(Long userId) {
+        try{
+            if (userId == null) {
+                throw new CustomException("user id must be not null", HttpStatus.BAD_REQUEST);
+            }
+            List<Order> orderList = orderService.getOrdersByUser(userId);
+            if (orderList.isEmpty()) {
+                return List.of();
+            }
+            return orderList.stream()
+                    .map(order -> modelMapper.map(order, OrderDTO.class))
+                    .collect(Collectors.toList());
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void update(Map<String, Object> json, Long id) {
         try {
             OrderDTO orderDTO = validateData(json);

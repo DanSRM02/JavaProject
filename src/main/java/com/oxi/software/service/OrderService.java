@@ -52,4 +52,13 @@ public class OrderService implements Idao<Order, Long> {
     public List<OrderDetailsProjection>  findOrderDetailsById(Long id) {
         return this.orderRepository.findOrderDetailsById(id);
     }
+    public List<Order> getOrdersByUser(Long userId) {
+        List<Order> orders = orderRepository.findByUserId(userId);
+        if(orders.isEmpty()) {
+            throw new CustomException("No orders found", HttpStatus.NO_CONTENT);
+        }
+        return orders;
+    }
+
+
 }

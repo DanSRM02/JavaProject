@@ -30,4 +30,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     """)
     List<OrderDetailsProjection> findOrderDetailsById(@Param("orderId") Long orderId);
 
+    List<Order> findByUserId(Long userId);
+
 }

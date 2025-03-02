@@ -24,14 +24,12 @@ public class ResponseHttpApi {
         return response;
     }
 
-    public static Map<String, Object> responseHttpAuth(HttpStatus code, String msm, String jwt) {
+    public static Map<String, Object> responseHttpAuth(HttpStatus status, String mensaje, String jwt) {
         Map<String, Object> response = new HashMap<>();
-
-        response.put("date", new Date());
-        response.put("code", code);
-        response.put("message", msm);
+        response.put("timestamp", new Date());
+        response.put("status", status.value());
+        response.put("message", mensaje);
         response.put("jwt", jwt);
-
         return response;
     }
 

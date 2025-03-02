@@ -34,7 +34,7 @@ public class AuthBusiness  {
     private final PasswordEncoder passwordEncoder;
 
     // Valor por defecto en caso de que no se envíe rol (por ejemplo, rol de cliente)
-    private static final Long DEFAULT_ROL_TYPE_ID = 1L;
+    private static final Long DEFAULT_ROL_TYPE_ID = 2L;
 
     public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
         this.individualBusiness = individualBusiness;
@@ -104,7 +104,7 @@ public class AuthBusiness  {
         }
     }
 
-    protected Authentication authentication(String username, String password){
+    public Authentication authentication(String username, String password){
 
         UserDetails userFound = userFinder(username);
 

@@ -113,6 +113,27 @@ public class OrderController {
                     HttpStatus.CONFLICT);
         }
     }
+    @GetMapping("/find-orders/{id}")
+    public ResponseEntity<Map<String, Object>> getOrdersByUserId(@PathVariable Long id) {
+        try{
+            List<OrderDTO> orderDTOList = orderBusiness.findOrdersByUserId(id);
+            if (orderDTOList != null) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(
+                        orderDTOList,
+                        ResponseHttpApi.CODE_OK,
+                        "Successfully Completed"
+                ), HttpStatus.OK);
+            }
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpAction(
+                    ResponseHttpApi.CODE_BAD,
+                    "There isn't that order"
+            ), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            throw new CustomException("Error getting order: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
+        }
+    }
+
 
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllOrders() {

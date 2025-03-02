@@ -48,8 +48,18 @@ public class SecurityConfig {
                             http.requestMatchers("/api/v1/oxi/individual-type/all").permitAll();
                             http.requestMatchers("/api/v1/oxi/document-type/all").permitAll();
 
-                            // Rutas privadas
+                            // Rutas privadas - productos
                             http.requestMatchers("/api/v1/oxi/product/all").authenticated();
+                            http.requestMatchers("/api/v1/oxi/product-variant/add").authenticated();
+//                            http.requestMatchers("/api/v1/oxi/product-variant/delete/{id}").hasRole("ROLE_GERENTE");
+                            http.requestMatchers("/api/v1/oxi/product-variant/update/{id}").authenticated();
+                            http.requestMatchers("/api/v1/oxi/product-variant/find").authenticated();
+                            http.requestMatchers("/api/v1/oxi/product-variant/toggler/{id}").authenticated();
+
+                            // Ruta privada - unidades
+                            http.requestMatchers("/api/v1/oxi/unit/all").authenticated();
+
+                            // Rutas privadas - usuarios
                             http.requestMatchers("/api/v1/oxi/user/all").authenticated();
                             http.requestMatchers("/api/v1/oxi/user/find/{id}").authenticated();
                             http.requestMatchers("/api/v1/oxi/order/all/{state}").authenticated();
