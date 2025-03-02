@@ -3,6 +3,7 @@ package com.oxi.software.dto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class OrderDTO {
     private Boolean priority;
     private Double total;
     private UserDTO user;
-    private List<OrderLineDTO> orderLines;
+    private List<OrderLineDTO> orderLines = new ArrayList<>();
     private Date createdAt;
 
 }

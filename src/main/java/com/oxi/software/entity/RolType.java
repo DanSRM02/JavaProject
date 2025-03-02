@@ -5,9 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Setter
 @Getter
@@ -42,8 +40,8 @@ public class RolType {
             joinColumns = @JoinColumn(name = "rol_type_id"),
             inverseJoinColumns = @JoinColumn(name = "permission_id")
     )
-    private Set<Permission> permissions;
+    private Set<Permission> permissions = new HashSet<>();
 
     @OneToMany(mappedBy = "rolType")
-    private List<User> users;
+    private List<User> users = new ArrayList<>();
 }

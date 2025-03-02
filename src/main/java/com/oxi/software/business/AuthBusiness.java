@@ -1,7 +1,6 @@
 package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
-import com.oxi.software.entity.Individual;
 import com.oxi.software.entity.User;
 import com.oxi.software.service.AuthService;
 import com.oxi.software.utilities.Util;
@@ -9,7 +8,6 @@ import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -89,10 +87,14 @@ public class AuthBusiness  {
 
             String username = authDTO.getUsername();
             String password = authDTO.getPassword();
+            User user = authService.findByUsername(username);
+            System.out.println(username);
+            System.out.println("····················································"+user.toString());
+            Long userId = user.getId();
 
             Authentication authentication = this.authentication(username, password);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            String accessToken = jwtTokenProvider.createToken(authentication);
+            String accessToken = jwtTokenProvider.createToken(authentication, userId);
 
             return new AuthResponseDTO(
                     accessToken,

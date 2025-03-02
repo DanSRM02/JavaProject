@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,6 +35,6 @@ public class IndividualType {
     private Date updatedAt;
 
     @OneToMany(mappedBy = "individualType")
-    private List<Individual> individuals;
+    private List<Individual> individuals = new ArrayList<>();
 
 }

@@ -2,6 +2,7 @@ package com.oxi.software.service;
 
 import com.oxi.software.entity.Review;
 import com.oxi.software.repository.ReviewRepository;
+import com.oxi.software.repository.projection.ReviewListProjection;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,9 @@ public class ReviewService implements Idao<Review, Long> {
     @Override
     public List<Review> findAll() {
         return this.reviewRepository.findAll();
+    }
+
+    public List<ReviewListProjection> findAllProjection() {
+        return this.reviewRepository.findAllProjectedBy();
     }
 }

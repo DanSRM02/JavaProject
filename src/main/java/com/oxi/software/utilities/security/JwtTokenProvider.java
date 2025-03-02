@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     private String userGenerator;
 
     // Generar un token JWT
-    public String createToken(Authentication authentication) {
+    public String createToken(Authentication authentication, Long userId) {
         Algorithm algorithm = Algorithm.HMAC256(this.secretKey.trim());
 
         //Usuario
@@ -45,6 +45,7 @@ public class JwtTokenProvider {
         return JWT.create()
                 .withIssuer(this.userGenerator)
                 .withSubject(username)
+                .withClaim("user_id", userId)
                 .withClaim("authorities", authorities)
                 .withClaim("role", roles)
                 .withIssuedAt(new Date())
@@ -67,13 +68,5 @@ public class JwtTokenProvider {
       } catch (JWTVerificationException e){
           throw new JWTVerificationException("Token is not valid, not authorized" + e.getMessage());
       }
-    }
-
-    public Claim getSpecificClaim(DecodedJWT decodedJWT, String claimName){
-        return decodedJWT.getClaim(claimName);
-    }
-
-    public Long extractDocument (DecodedJWT decodedJWT){
-        return Long.valueOf(decodedJWT.getSubject());
     }
 }

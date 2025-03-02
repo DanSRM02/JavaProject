@@ -21,8 +21,10 @@ public class Review {
     private Long id;
     @Column(name = "title", nullable = false,  length = 254)
     private String title;
-    @Column(name = "message", nullable = false,  length = 254)
-    private String message;
+    @Column(name = "description", nullable = false,  length = 254)
+    private String description;
+    @Column(name = "rating", nullable = false, length = 1)
+    private int rating;
     @Column(name = "state", nullable = false, columnDefinition = "boolean default true")
     private Boolean state;
 

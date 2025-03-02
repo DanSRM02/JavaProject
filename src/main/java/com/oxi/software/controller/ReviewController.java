@@ -2,6 +2,7 @@ package com.oxi.software.controller;
 
 import com.oxi.software.business.ReviewBusiness;
 import com.oxi.software.dto.ReviewDTO;
+import com.oxi.software.dto.ReviewListDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +75,7 @@ public class ReviewController {
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllReviews() {
         try{
-            List<ReviewDTO> reviewDTOList = reviewBusiness.findAll();
+            List<ReviewListDTO> reviewDTOList = reviewBusiness.findAllReviews();
             if (!reviewDTOList.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         reviewDTOList,

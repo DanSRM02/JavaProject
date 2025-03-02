@@ -2,10 +2,12 @@ package com.oxi.software.business;
 
 import com.oxi.software.dto.ProductDTO;
 import com.oxi.software.dto.ReviewDTO;
+import com.oxi.software.dto.ReviewListDTO;
 import com.oxi.software.dto.UserDTO;
 import com.oxi.software.entity.Product;
 import com.oxi.software.entity.Review;
 import com.oxi.software.entity.User;
+import com.oxi.software.repository.projection.ReviewListProjection;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.ReviewService;
 import com.oxi.software.service.UserService;
@@ -47,38 +49,25 @@ public class ReviewBusiness {
     // Crear una nueva reseña
     public void add(Map<String, Object> request) {
         try {
-            logger.debug("Starting to add review with request data: {}", request);
-
-            // Validar y mapear el DTO
             ReviewDTO reviewDTO = validateData(request);
-            logger.debug("Validated ReviewDTO: {}", reviewDTO);
 
-            Review review = modelMapper.map(reviewDTO, Review.class);
-            logger.debug("Mapped Review entity: {}", review);
+            // Mapeo manual para evitar problemas
+            Review review = new Review();
+            review.setTitle(reviewDTO.getTitle());
+            review.setDescription(reviewDTO.getDescription());
+            review.setRating(reviewDTO.getRating());
+            review.setState(reviewDTO.isState());
 
-            // Verificar la existencia del producto
+            // Asignar relaciones directamente desde los servicios
             Product product = productService.findBy(reviewDTO.getProduct().getId());
-            if (product == null) {
-                logger.error("Product not found for id: {}", reviewDTO.getProduct().getId());
-                throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
-            }
-            review.setProduct(product);
-            logger.debug("Assigned product to review: {}", product);
-
-            // Verificar la existencia del usuario
             User user = userService.findBy(reviewDTO.getUser().getId());
-            if (user == null) {
-                logger.error("User not found for id: {}", reviewDTO.getUser().getId());
-                throw new CustomException("User not found", HttpStatus.NOT_FOUND);
-            }
+
+            review.setProduct(product);
             review.setUser(user);
-            logger.debug("Assigned user to review: {}", user);
 
-            // Guardar la reseña en la base de datos
             reviewService.save(review);
-            logger.info("Review successfully added: {}", review);
 
-        } catch (CustomException ce) {
+        }  catch (CustomException ce) {
             logger.error("Custom exception while adding review: {}", ce.getMessage(), ce);
             throw new CustomException("Error creating review: " + ce.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
@@ -131,23 +120,6 @@ public class ReviewBusiness {
         }
     }
 
-    // Obtener todas las reseñas
-    public List<ReviewDTO> findAll() {
-        try {
-            logger.debug("Fetching all reviews from the database");
-
-            List<Review> reviews = reviewService.findAll();
-            logger.debug("Found reviews: {}", reviews);
-
-            return reviews.stream()
-                    .map(review -> modelMapper.map(review, ReviewDTO.class))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            logger.error("Error retrieving reviews: {}", e.getMessage(), e);
-            throw new CustomException("Error retrieving reviews: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ReviewDTO findBy(Long id) {
         try {
             logger.debug("Fetching review by id: {}", id);
@@ -166,6 +138,22 @@ public class ReviewBusiness {
         }
     }
 
+    public List<ReviewListDTO> findAllReviews(){
+        try {
+            logger.debug("Fetching all reviews from the database");
+
+            List<ReviewListProjection> reviewListProjections = reviewService.findAllProjection();
+            logger.debug("Found reviews: {}", reviewListProjections);
+            
+            return reviewListProjections.stream()
+                    .map(review -> modelMapper.map(review, ReviewListDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("Error retrieving reviews: {}", e.getMessage(), e);
+            throw new CustomException("Error retrieving reviews: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private ReviewDTO validateData(Map<String, Object> request) {
         logger.debug("Validating request data: {}", request);
 
@@ -176,8 +164,10 @@ public class ReviewBusiness {
 
         reviewDTO.setId(0L);
         reviewDTO.setTitle(data.getString("title"));
-        reviewDTO.setMessage(data.getString("description"));
-        logger.debug("Mapped ReviewDTO title and description: {}, {}", reviewDTO.getTitle(), reviewDTO.getMessage());
+        reviewDTO.setDescription(data.getString("description"));
+        reviewDTO.setRating(data.getInt("rating"));
+        reviewDTO.setState(data.getBoolean("state"));
+        logger.debug("Mapped ReviewDTO title and description: {}, {}", reviewDTO.getTitle(), reviewDTO.getDescription());
 
         // Assign Foreign Keys
         Long productId = Long.parseLong(data.get("product_id").toString());

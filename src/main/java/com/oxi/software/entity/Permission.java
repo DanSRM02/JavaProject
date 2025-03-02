@@ -3,6 +3,7 @@ package com.oxi.software.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -23,5 +24,5 @@ public class Permission {
     private String name;
 
     @ManyToMany(mappedBy = "permissions")
-    private Set<RolType> rolTypes;
+    private Set<RolType> rolTypes = new HashSet<>();
 }

@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,9 +40,9 @@ public class Product {
 
     // Relaciones existentes
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<Review> review;
+    private List<Review> review = new ArrayList<>();
 
     // Nueva relación para las variantes del producto
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ProductVariant> variants;
+    private List<ProductVariant> variants = new ArrayList<>();
 }
