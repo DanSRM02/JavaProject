@@ -87,16 +87,23 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> getOrdersByUserId(@PathVariable Long userId) {
         try {
             List<OrderDTO> orderDTOList = orderBusiness.findOrdersByUserId(userId);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                    orderDTOList,
-                    HttpStatus.OK,
-                    "Successfully Completed",
-                    orderDTOList.size()),
-                    HttpStatus.OK);
+            if (!orderDTOList.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        orderDTOList,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        orderDTOList.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Orders not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
         } catch (Exception e) {
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error getting orders: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
+            throw new CustomException("Error getting orders: " + e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 

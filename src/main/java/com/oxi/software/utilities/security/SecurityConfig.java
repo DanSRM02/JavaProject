@@ -71,6 +71,7 @@ public class SecurityConfig {
                             http.requestMatchers("/api/v1/oxi/user/find/{id}").authenticated();
 
                             http.requestMatchers("/api/v1/oxi/order/all/{state}").authenticated();
+                            http.requestMatchers("/api/v1/oxi/order/user/{id}").authenticated();
                             http.requestMatchers("/api/v1/oxi/order/details/{id}").authenticated();
                             http.requestMatchers("/api/v1/oxi/order/find/{id}").authenticated();
                             http.requestMatchers("/api/v1/oxi/order/update/{id}").authenticated();

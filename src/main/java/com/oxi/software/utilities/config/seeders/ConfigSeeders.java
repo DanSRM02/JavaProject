@@ -268,68 +268,69 @@ public class ConfigSeeders implements CommandLineRunner {
             // Crear User PRIMERO
             User adminUser = User.builder()
                     .state(true)
-                    .username(adminEmail)
+                    .username("admin@example.com")
                     .password(passwordEncoder.encode("Admin1234"))
                     .rolType(gerenteRole)
                     .createdAt(new Date())
                     .updatedAt(new Date())
                     .build();
 
-            // Crear Individual y asociarlo al User
+// Crear Individual y asociarlo al User
             Individual adminIndividual = Individual.builder()
-                    .name("Administrador del Sistema")
-                    .email(adminEmail)
-                    .address("Sede Principal")
+                    .name("Carlos Ramírez")
+                    .email("admin@example.com")
+                    .address("Oficina Central")
                     .document("1234567890")
-                    .phone("3001234567")
+                    .phone("3101234567")
                     .individualType(adminType)
                     .documentType(cedula)
                     .user(adminUser) // Relación bidireccional
                     .build();
 
-            // Crear User PRIMERO
+// Crear User PRIMERO
             User vendorUser = User.builder()
                     .state(true)
-                    .username(vendorEmail)
+                    .username("vendor@example.com")
                     .password(passwordEncoder.encode("Vendedor1234"))
                     .rolType(vendedorRole)
                     .createdAt(new Date())
                     .updatedAt(new Date())
                     .build();
 
-
-            // Crear Individual y asociarlo al User
+// Crear Individual y asociarlo al User
             Individual vendorIndividual = Individual.builder()
-                    .name("Administrador del Sistema")
-                    .email(vendorEmail)
-                    .address("Sede Principal")
+                    .name("Lucía Fernández")
+                    .email("vendor@example.com")
+                    .address("Sucursal Norte")
                     .document("0987654321")
-                    .phone("3001234567")
+                    .phone("3159876543")
                     .individualType(adminType)
                     .documentType(cedula)
                     .user(vendorUser) // Relación bidireccional
                     .build();
 
+// Crear User PRIMERO
             User deliveryUser = User.builder()
                     .state(true)
-                    .username(deliveryEmail)
+                    .username("delivery@example.com")
                     .password(passwordEncoder.encode("Domiciliario1234"))
                     .rolType(domicilarioRole)
                     .createdAt(new Date())
                     .updatedAt(new Date())
                     .build();
 
-            // Crear Individual y asociarlo al User
+// Crear Individual y asociarlo al User
             Individual deliveryIndividual = Individual.builder()
-                    .name("Administrador del Sistema")
-                    .email(deliveryEmail)
-                    .address("Sede Principal")
+                    .name("Miguel Torres")
+                    .email("delivery@example.com")
+                    .address("Zona de Despacho")
                     .document("789645123")
-                    .phone("3001234567")
+                    .phone("3206549871")
                     .individualType(adminType)
                     .documentType(cedula)
                     .user(deliveryUser) // Relación bidireccional
                     .build();
+
 
 
             // Asignar Individual al User
