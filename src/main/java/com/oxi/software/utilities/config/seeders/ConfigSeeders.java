@@ -3,12 +3,10 @@ package com.oxi.software.utilities.config.seeders;
 import com.oxi.software.entity.*;
 import com.oxi.software.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class ConfigSeeders implements CommandLineRunner {
@@ -20,14 +18,20 @@ public class ConfigSeeders implements CommandLineRunner {
     private final RolTypeRepository rolTypeRepository;
     private final PermissionRepository permissionRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
+    private final IndividualRepository individualRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository, PermissionRepository permissionRepository, ProductRepository productRepository) {
+    public ConfigSeeders(DocumentTypeRepository documentTypeRepository, IndividualTypeRepository individualTypeRepository , UnitRepository unitRepository, RolTypeRepository rolTypeRepository, PermissionRepository permissionRepository, ProductRepository productRepository, UserRepository userRepository, IndividualRepository individualRepository, PasswordEncoder passwordEncoder) {
         this.documentTypeRepository = documentTypeRepository;
         this.individualTypeRepository = individualTypeRepository;
         this.unitRepository = unitRepository;
         this.rolTypeRepository = rolTypeRepository;
         this.permissionRepository = permissionRepository;
         this.productRepository = productRepository;
+        this.userRepository = userRepository;
+        this.individualRepository = individualRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -51,6 +55,8 @@ public class ConfigSeeders implements CommandLineRunner {
         if (productRepository.count() == 0){
             productRepository.saveAll(getProduct());
         }
+
+        createAdminUser();
     }
 
 
@@ -231,5 +237,110 @@ public class ConfigSeeders implements CommandLineRunner {
         roleList.add(desarrollador);
 
         return roleList;
+    }
+
+    private void createAdminUser() {
+        String adminEmail = "admin@oxi.com";
+        String vendorEmail = "vendor@oxi.com";
+        String deliveryEmail = "domiciliario@oxi.com";
+
+        if (!userRepository.existsByUsername(adminEmail)) {
+            // Obtener tipos requeridos
+            IndividualType adminType = individualTypeRepository.findById(1L)
+                    .orElseGet(() -> individualTypeRepository.save(
+                            IndividualType.builder()
+                                    .name("Administrador")
+                                    .build()));
+
+            DocumentType cedula = documentTypeRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("DocumentType Cédula no encontrado"));
+
+            RolType gerenteRole = rolTypeRepository.findById(4L)
+                    .orElseThrow(() -> new RuntimeException("Rol GERENTE no encontrado"));
+
+            RolType vendedorRole = rolTypeRepository.findById(1L)
+                    .orElseThrow(() -> new RuntimeException("Rol VENDEDOR no encontrado"));
+
+            RolType domicilarioRole = rolTypeRepository.findById(3L)
+                    .orElseThrow(() -> new RuntimeException("Rol DOMICILIAIRO no encontrado"));
+
+
+            // Crear User PRIMERO
+            User adminUser = User.builder()
+                    .state(true)
+                    .username(adminEmail)
+                    .password(passwordEncoder.encode("Admin1234"))
+                    .rolType(gerenteRole)
+                    .createdAt(new Date())
+                    .updatedAt(new Date())
+                    .build();
+
+            // Crear Individual y asociarlo al User
+            Individual adminIndividual = Individual.builder()
+                    .name("Administrador del Sistema")
+                    .email(adminEmail)
+                    .address("Sede Principal")
+                    .document("1234567890")
+                    .phone("3001234567")
+                    .individualType(adminType)
+                    .documentType(cedula)
+                    .user(adminUser) // Relación bidireccional
+                    .build();
+
+            // Crear User PRIMERO
+            User vendorUser = User.builder()
+                    .state(true)
+                    .username(vendorEmail)
+                    .password(passwordEncoder.encode("Vendedor1234"))
+                    .rolType(vendedorRole)
+                    .createdAt(new Date())
+                    .updatedAt(new Date())
+                    .build();
+
+
+            // Crear Individual y asociarlo al User
+            Individual vendorIndividual = Individual.builder()
+                    .name("Administrador del Sistema")
+                    .email(vendorEmail)
+                    .address("Sede Principal")
+                    .document("0987654321")
+                    .phone("3001234567")
+                    .individualType(adminType)
+                    .documentType(cedula)
+                    .user(vendorUser) // Relación bidireccional
+                    .build();
+
+            User deliveryUser = User.builder()
+                    .state(true)
+                    .username(deliveryEmail)
+                    .password(passwordEncoder.encode("Domiciliario1234"))
+                    .rolType(domicilarioRole)
+                    .createdAt(new Date())
+                    .updatedAt(new Date())
+                    .build();
+
+            // Crear Individual y asociarlo al User
+            Individual deliveryIndividual = Individual.builder()
+                    .name("Administrador del Sistema")
+                    .email(deliveryEmail)
+                    .address("Sede Principal")
+                    .document("789645123")
+                    .phone("3001234567")
+                    .individualType(adminType)
+                    .documentType(cedula)
+                    .user(deliveryUser) // Relación bidireccional
+                    .build();
+
+
+            // Asignar Individual al User
+            adminUser.setIndividual(adminIndividual);
+            vendorUser.setIndividual(vendorIndividual);
+            deliveryUser.setIndividual(deliveryIndividual);
+
+            // Guardar solo el User (se propagará al Individual por cascade)
+            userRepository.save(adminUser); // No usar saveAndFlush
+            userRepository.save(vendorUser);
+            userRepository.save(deliveryUser);
+        }
     }
 }

@@ -1,7 +1,6 @@
 package com.oxi.software.controller;
 
 import com.oxi.software.business.UserBusiness;
-import com.oxi.software.dto.IndividualDTO;
 import com.oxi.software.dto.UserDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;

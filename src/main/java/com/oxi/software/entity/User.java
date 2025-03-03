@@ -55,7 +55,7 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Delivery delivery;
 
-    @OneToOne(cascade = CascadeType.REFRESH)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_id_individual")
     private Individual individual;
 
