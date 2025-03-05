@@ -240,11 +240,17 @@ public class ConfigSeeders implements CommandLineRunner {
     }
 
     private void createAdminUser() {
-        String adminEmail = "admin@oxi.com";
-        String vendorEmail = "vendor@oxi.com";
-        String deliveryEmail = "domiciliario@oxi.com";
+        // Usernames de los usuarios a crear
+        String adminUsername = "admin@example.com";
+        String vendorUsername = "vendor@example.com";
+        String deliveryUsername = "delivery@example.com";
 
-        if (!userRepository.existsByUsername(adminEmail)) {
+        // Verificar si alguno de los usuarios ya existe
+        boolean usersExist = userRepository.existsByUsername(adminUsername)
+                || userRepository.existsByUsername(vendorUsername)
+                || userRepository.existsByUsername(deliveryUsername);
+
+        if (!usersExist) {
             // Obtener tipos requeridos
             IndividualType adminType = individualTypeRepository.findById(1L)
                     .orElseGet(() -> individualTypeRepository.save(
@@ -261,87 +267,90 @@ public class ConfigSeeders implements CommandLineRunner {
             RolType vendedorRole = rolTypeRepository.findById(1L)
                     .orElseThrow(() -> new RuntimeException("Rol VENDEDOR no encontrado"));
 
-            RolType domicilarioRole = rolTypeRepository.findById(3L)
-                    .orElseThrow(() -> new RuntimeException("Rol DOMICILIAIRO no encontrado"));
+            RolType domiciliarioRole = rolTypeRepository.findById(3L)
+                    .orElseThrow(() -> new RuntimeException("Rol DOMICILIARIO no encontrado"));
 
+            // Crear usuarios solo si no existen
+            User adminUser = createUser(
+                    adminUsername,
+                    "Admin1234",
+                    gerenteRole,
+                    "Carlos Ramírez",
+                    "admin@example.com",
+                    "Oficina Central",
+                    "1234567890",
+                    "3101234567",
+                    adminType,
+                    cedula
+            );
 
-            // Crear User PRIMERO
-            User adminUser = User.builder()
-                    .state(true)
-                    .username("admin@example.com")
-                    .password(passwordEncoder.encode("Admin1234"))
-                    .rolType(gerenteRole)
-                    .createdAt(new Date())
-                    .updatedAt(new Date())
-                    .build();
+            User vendorUser = createUser(
+                    vendorUsername,
+                    "Vendedor1234",
+                    vendedorRole,
+                    "Lucía Fernández",
+                    "vendor@example.com",
+                    "Sucursal Norte",
+                    "0987654321",
+                    "3159876543",
+                    adminType,
+                    cedula
+            );
 
-// Crear Individual y asociarlo al User
-            Individual adminIndividual = Individual.builder()
-                    .name("Carlos Ramírez")
-                    .email("admin@example.com")
-                    .address("Oficina Central")
-                    .document("1234567890")
-                    .phone("3101234567")
-                    .individualType(adminType)
-                    .documentType(cedula)
-                    .user(adminUser) // Relación bidireccional
-                    .build();
+            User deliveryUser = createUser(
+                    deliveryUsername,
+                    "Domiciliario1234",
+                    domiciliarioRole,
+                    "Miguel Torres",
+                    "delivery@example.com",
+                    "Zona de Despacho",
+                    "789645123",
+                    "3206549871",
+                    adminType,
+                    cedula
+            );
 
-// Crear User PRIMERO
-            User vendorUser = User.builder()
-                    .state(true)
-                    .username("vendor@example.com")
-                    .password(passwordEncoder.encode("Vendedor1234"))
-                    .rolType(vendedorRole)
-                    .createdAt(new Date())
-                    .updatedAt(new Date())
-                    .build();
-
-// Crear Individual y asociarlo al User
-            Individual vendorIndividual = Individual.builder()
-                    .name("Lucía Fernández")
-                    .email("vendor@example.com")
-                    .address("Sucursal Norte")
-                    .document("0987654321")
-                    .phone("3159876543")
-                    .individualType(adminType)
-                    .documentType(cedula)
-                    .user(vendorUser) // Relación bidireccional
-                    .build();
-
-// Crear User PRIMERO
-            User deliveryUser = User.builder()
-                    .state(true)
-                    .username("delivery@example.com")
-                    .password(passwordEncoder.encode("Domiciliario1234"))
-                    .rolType(domicilarioRole)
-                    .createdAt(new Date())
-                    .updatedAt(new Date())
-                    .build();
-
-// Crear Individual y asociarlo al User
-            Individual deliveryIndividual = Individual.builder()
-                    .name("Miguel Torres")
-                    .email("delivery@example.com")
-                    .address("Zona de Despacho")
-                    .document("789645123")
-                    .phone("3206549871")
-                    .individualType(adminType)
-                    .documentType(cedula)
-                    .user(deliveryUser) // Relación bidireccional
-                    .build();
-
-
-
-            // Asignar Individual al User
-            adminUser.setIndividual(adminIndividual);
-            vendorUser.setIndividual(vendorIndividual);
-            deliveryUser.setIndividual(deliveryIndividual);
-
-            // Guardar solo el User (se propagará al Individual por cascade)
-            userRepository.save(adminUser); // No usar saveAndFlush
+            userRepository.save(adminUser);
             userRepository.save(vendorUser);
             userRepository.save(deliveryUser);
         }
+    }
+
+    // Método auxiliar para crear usuarios e individuos
+    private User createUser(
+            String username,
+            String password,
+            RolType rol,
+            String individualName,
+            String email,
+            String address,
+            String document,
+            String phone,
+            IndividualType individualType,
+            DocumentType documentType) {
+
+        User user = User.builder()
+                .state(true)
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .rolType(rol)
+                .createdAt(new Date())
+                .updatedAt(new Date())
+                .build();
+
+        Individual individual = Individual.builder()
+                .name(individualName)
+                .email(email)
+                .address(address)
+                .document(document)
+                .phone(phone)
+                .individualType(individualType)
+                .documentType(documentType)
+                .user(user)
+                .build();
+
+        user.setIndividual(individual);
+        return user;
+
     }
 }

@@ -4,6 +4,7 @@ import com.oxi.software.dto.*;
 import com.oxi.software.entity.Individual;
 import com.oxi.software.entity.RolType;
 import com.oxi.software.entity.User;
+import com.oxi.software.repository.projection.DeliveryProjection;
 import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.RolTypeService;
 import com.oxi.software.service.UserService;
@@ -105,6 +106,21 @@ public class UserBusiness {
             }
             return userList.stream()
                     .map(user -> modelMapper.map(user, UserDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new CustomException("Error getting users: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public List<DeliveryProDTO> findActiveDeliveries(){
+        try{
+            List<DeliveryProjection> deliveryProjections = this.userService.findActiveDeliveries();
+            if (deliveryProjections.isEmpty()) {
+                return List.of();
+            }
+            return deliveryProjections.stream()
+                    .map(user -> modelMapper.map(user, DeliveryProDTO.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new CustomException("Error getting users: " + e.getMessage(),

@@ -13,7 +13,29 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<OrderSummaryProjection> findByState(String state);
+    @Query("""
+  SELECT\s
+      o.id AS id,
+      o.state AS orderState,
+      i.email AS userIndividualEmail,
+      i.phone AS userIndividualPhone,
+      i.address AS userIndividualAddress,
+      o.total AS total,
+      o.createdAt AS createdAt,
+      i.name AS userIndividualName,
+      d.deliveryState AS deliveryState,
+      di.name AS deliveryPersonName
+  FROM Order o
+  JOIN o.user u
+  JOIN u.individual i
+  LEFT JOIN o.delivery d
+  LEFT JOIN d.user du
+  LEFT JOIN du.individual di
+  WHERE o.state =:state
+  ORDER BY o.id ASC   \s
+""")
+    List<OrderSummaryProjection> findByState(@Param("state") String state);
+
 
     @Query("""
         SELECT 

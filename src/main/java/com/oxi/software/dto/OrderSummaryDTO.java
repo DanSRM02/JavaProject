@@ -13,12 +13,15 @@ import lombok.NoArgsConstructor;
 public class OrderSummaryDTO   {
 
     private Long id;
-    private String state;
+    @JsonProperty("order_state")
+    private String orderState;
     private Double total;
     @JsonProperty("individual_name")
     private String userIndividualName;
     private String email;
     private String address;
     private String createdAt;
+    @JsonProperty("delivery_person")
+    private String deliveryPersonName;
 
 }

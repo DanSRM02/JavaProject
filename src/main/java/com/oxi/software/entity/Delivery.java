@@ -2,6 +2,8 @@ package com.oxi.software.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
 
@@ -21,10 +23,12 @@ public class Delivery {
     @Column(name = "delivery_state", length = 20)
     private String deliveryState;  // READY_TO_DISPATCH, IN_TRANSIT, DELIVERED
 
+    @CreationTimestamp
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
@@ -36,7 +40,7 @@ public class Delivery {
 
     // Relation with Delivery man
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-    @JoinColumn(name = "fk_id_user", referencedColumnName = "user_id")
+    @JoinColumn(name = "fk_id_domiciliary", referencedColumnName = "user_id")
     private User user;
 
 }

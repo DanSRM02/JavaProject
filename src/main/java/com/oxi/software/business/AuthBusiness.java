@@ -7,6 +7,7 @@ import com.oxi.software.utilities.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.security.JwtTokenProvider;
 import jakarta.transaction.Transactional;
+import org.apache.coyote.BadRequestException;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,13 +89,12 @@ public class AuthBusiness  {
 
             String username = authDTO.getUsername();
             String password = authDTO.getPassword();
-            User user = authService.findByUsername(username);
-            System.out.println(username);
-            System.out.println("····················································"+user.toString());
-            Long userId = user.getId();
 
             Authentication authentication = this.authentication(username, password);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            User user = authService.findByUsername(username);
+            Long userId = user.getId();
             String accessToken = jwtTokenProvider.createToken(authentication, userId);
 
             return new AuthResponseDTO(
@@ -148,7 +149,7 @@ public class AuthBusiness  {
                     authorities
             );
         }
-        return null;
+        return null ;
     }
 
 }

@@ -48,35 +48,6 @@ public class SecurityConfig {
                             http.requestMatchers("/api/v1/oxi/individual-type/all").permitAll();
                             http.requestMatchers("/api/v1/oxi/document-type/all").permitAll();
 
-                            // Rutas privadas - productos
-                            http.requestMatchers("/api/v1/oxi/product/all").authenticated();
-                            http.requestMatchers("/api/v1/oxi/product-variant/add").authenticated();
-//                            http.requestMatchers("/api/v1/oxi/product-variant/delete/{id}").hasRole("ROLE_GERENTE");
-                            http.requestMatchers("/api/v1/oxi/product-variant/update/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/product-variant/find").authenticated();
-
-                            // Ruta privada - unidades
-                            http.requestMatchers("/api/v1/oxi/unit/all").authenticated();
-                            http.requestMatchers("/api/v1/oxi/unit/add").authenticated();
-                            http.requestMatchers("/api/v1/oxi/unit/update/{id}").authenticated();
-
-                            // Ruta privada - Reseñas
-                            http.requestMatchers("/api/v1/oxi/review/add").authenticated();
-                            http.requestMatchers("/api/v1/oxi/review/update/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/review/find").authenticated();
-                            http.requestMatchers("/api/v1/oxi/review/all").authenticated();
-
-                            // Rutas privadas - usuarios
-                            http.requestMatchers("/api/v1/oxi/user/all").authenticated();
-                            http.requestMatchers("/api/v1/oxi/user/find/{id}").authenticated();
-
-                            http.requestMatchers("/api/v1/oxi/order/all/{state}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/order/user/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/order/details/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/order/find/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/order/update/{id}").authenticated();
-                            http.requestMatchers("/api/v1/oxi/order/add").authenticated();
-
                             http.anyRequest().authenticated();
                         })
                 .addFilterBefore(new JwtValidator(jwtTokenProvider), BasicAuthenticationFilter.class)

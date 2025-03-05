@@ -4,10 +4,12 @@ import java.util.Date;
 
 public interface OrderSummaryProjection {
     Long getId();
-    String getState();
+    String getOrderState();
     String getUserIndividualEmail();
     String getUserIndividualAddress();
     Double getTotal();
     Date getCreatedAt();
     String getUserIndividualName();
+    // Nuevo campo agregado
+    String getDeliveryPersonName();
 }

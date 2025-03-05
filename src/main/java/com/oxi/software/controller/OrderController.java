@@ -141,6 +141,28 @@ public class OrderController {
         }
     }
 
+    @PostMapping("/toggler/{id}")
+    public ResponseEntity<Map<String, Object>> toggleProduct(@RequestBody Map<String, Object> product , @PathVariable("id") Long id) {
+        try {
+            // Call Business to update Product
+            orderBusiness.changeStatus(product, id);
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Product updated successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error updating product: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/details/{orderId}")
     public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Long orderId) {
         try {

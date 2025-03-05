@@ -62,6 +62,25 @@ public class ProductBusiness {
         }
     }
 
+    public void changeStatus(Map<String, Object> data, Long id) {
+        try{
+            Product product = productService.findBy(id);
+            //Pass Map to JSONObject
+            JSONObject request = Util.getData(data);
+
+            if (product == null) {
+                throw new CustomException("Product not found", HttpStatus.NOT_FOUND);
+            }
+
+            product.setState(request.getBoolean("state"));
+            productService.save(product);
+
+        } catch (Exception e) {
+            throw new CustomException("Error getting product: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     public void delete(Long id) throws CustomException {
         try {
             // Verificar si el producto existe en la base de datos

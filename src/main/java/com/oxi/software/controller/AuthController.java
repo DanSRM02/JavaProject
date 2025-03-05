@@ -48,7 +48,7 @@ public class AuthController {
         } catch (Exception e) {
             // Respuesta para cualquier otra excepción
             return new ResponseEntity<>(
-                    ResponseHttpApi.responseHttpPost("Error logging in: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    ResponseHttpApi.responseHttpPost( e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST
             );
         }

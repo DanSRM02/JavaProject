@@ -1,10 +1,7 @@
 package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
-import com.oxi.software.entity.Order;
-import com.oxi.software.entity.OrderLine;
-import com.oxi.software.entity.ProductVariant;
-import com.oxi.software.entity.User;
+import com.oxi.software.entity.*;
 import com.oxi.software.repository.projection.OrderDetailsProjection;
 import com.oxi.software.repository.projection.OrderSummaryProjection;
 import com.oxi.software.service.OrderService;
@@ -209,6 +206,29 @@ public class OrderBusiness {
         }
     }
 
+    public void changeStatus(Map<String, Object> data, Long id) {
+        try{
+            Order order = orderService.findBy(id);
+            //Pass Map to JSONObject
+            JSONObject request = Util.getData(data);
+
+            System.out.println(request);
+
+            if (order == null) {
+                throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
+            }
+
+
+
+            order.setState(request.getString("state"));
+            orderService.save(order);
+
+        } catch (Exception e) {
+            throw new CustomException("Error getting Order: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     public List<OrderDTO> findOrdersByUserId(Long userId) {
         try{
             if (userId == null) {
@@ -229,6 +249,7 @@ public class OrderBusiness {
     public void update(Map<String, Object> json, Long id) {
         try {
             OrderDTO orderDTO = validateData(json);
+
             orderDTO.setId(id);
             Order order = modelMapper.map(orderDTO, Order.class);
             order.setUser(userService.findBy(orderDTO.getUser().getId()));

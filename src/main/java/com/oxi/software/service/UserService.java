@@ -2,6 +2,7 @@ package com.oxi.software.service;
 
 import com.oxi.software.entity.User;
 import com.oxi.software.repository.UserRepository;
+import com.oxi.software.repository.projection.DeliveryProjection;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,9 @@ public class UserService implements Idao<User, Long> {
     @Override
     public List<User> findAll() {
         return this.userRepository.findAll();
+    }
+
+    public List<DeliveryProjection> findActiveDeliveries(){
+        return this.userRepository.findActiveDeliveries();
     }
 }

@@ -44,6 +44,9 @@ public class Order {
 
     //relations / DONE
 
+    @OneToOne(mappedBy = "order")
+    private Delivery delivery;
+
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn (name = "fk_id_user")
     private User user;

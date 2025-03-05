@@ -1,6 +1,7 @@
 package com.oxi.software.controller;
 
 import com.oxi.software.business.UserBusiness;
+import com.oxi.software.dto.DeliveryProDTO;
 import com.oxi.software.dto.UserDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
@@ -43,6 +44,30 @@ public class UserController {
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error modifying user: " + e.getMessage(), HttpStatus.BAD_REQUEST),
                     HttpStatus.BAD_REQUEST);
+        }
+    }
+    @GetMapping("/deliveries/active")
+    public ResponseEntity<Map<String, Object>> findActiveDeliveries() {
+        try{
+            List<DeliveryProDTO> deliveryProDTOS = userBusiness.findActiveDeliveries();
+            if (!deliveryProDTOS.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        deliveryProDTOS,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        deliveryProDTOS.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Users not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
+        }catch (Exception e){
+            throw new CustomException("Error getting individuals: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
         }
     }
 

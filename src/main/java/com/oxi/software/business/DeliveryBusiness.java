@@ -12,6 +12,7 @@ import com.oxi.software.service.UserService;
 import com.oxi.software.utilities.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -96,45 +97,71 @@ public class DeliveryBusiness {
 
     public void add(Map<String, Object> request) {
         try {
-            // Validar datos y convertir a DTO
+            // 1. Validación mejorada de datos
             DeliveryDTO deliveryDTO = validateData(request);
             Delivery delivery = new Delivery();
 
-            // Manejar User manualmente
-            User user = userService.findBy(deliveryDTO.getDomiciliary().getId());
-            if (user == null) {
-                throw new CustomException("User not found", HttpStatus.NOT_FOUND);
-            }
+            // 2. Validación de usuario domiciliario
+            User domiciliary = userService.findBy(deliveryDTO.getDomiciliary().getId());
+            validateDomiciliary(domiciliary); // Nueva validación de rol
 
-            if (user.getIndividual() == null) {
-                throw new CustomException("Individual field cannot be null", HttpStatus.BAD_REQUEST);
-            }
-
-            delivery.setUser(user);
-
-            // Manejar Order manualmente
+            // 3. Validación del estado de la orden
             Order order = orderService.findBy(deliveryDTO.getOrder().getId());
-            if (order == null) {
-                throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
-            }
+            validateOrderState(order); // Nueva validación de estado de orden
+
+            // 4. Configuración de la entrega
+            delivery.setUser(domiciliary);
             delivery.setOrder(order);
+            delivery.setDeliveryState("PENDING"); // Estado inicial consistente con frontend
 
-            // Guardar entrega
-            deliveryService.save(delivery);
+            // 5. Transacción atómica
+            executeDeliveryCreation(delivery, order); // Manejo transaccional
 
-            // Log de información sobre la operación exitosa
-            logger.info("Delivery added successfully: {}", delivery);
+            logger.info("Delivery creado exitosamente - ID: {} | Domiciliario: {} | Orden: {}",
+                    delivery.getId(), domiciliary.getId(), order.getId());
 
         } catch (CustomException ce) {
-            // Log de error personalizado y relanzamiento de la excepción
-            logger.error("Custom error: {}", ce.getMessage(), ce);
-            throw new CustomException("Error adding delivery: " + ce.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+            throw ce; // Excepción específica para el cliente
 
         } catch (Exception e) {
-            // Log de error inesperado y relanzamiento de la excepción
-            logger.error("Unexpected error occurred while adding delivery", e);
-            throw new RuntimeException("Unexpected error occurred while adding delivery", e);
+            logger.error("Error crítico en creación de delivery", e);
+            throw new CustomException("Error interno del sistema",
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // Métodos de apoyo
+    private void validateDomiciliary(User user) {
+        if (user == null) {
+            throw new CustomException("Domiciliario no encontrado",
+                    HttpStatus.NOT_FOUND
+                    );
+        }
+        if (!"DOMICILIARIO".equals(user.getRolType().getName())) {
+            throw new CustomException("El usuario no es un domiciliario válido",
+                    HttpStatus.BAD_REQUEST );
+        }
+    }
+
+    private void validateOrderState(Order order) {
+        if (order == null) {
+            throw new CustomException("Orden no encontrada",
+                    HttpStatus.NOT_FOUND);
+        }
+        if (!"APPROVED".equals(order.getState())) {
+            throw new CustomException("La orden no está en estado aprobado",
+                    HttpStatus.CONFLICT);
+        }
+    }
+
+    @Transactional
+    protected void executeDeliveryCreation(Delivery delivery, Order order) {
+        orderService.save(order);
+        delivery.setDeliveryState("READY_TO_DISPATCH"); // Actualización del estado de la orden
+        deliveryService.save(delivery);
+
+
     }
 
     public void update(Map<String, Object> request, Long id) {
