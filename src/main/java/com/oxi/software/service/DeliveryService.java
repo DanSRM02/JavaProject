@@ -42,4 +42,8 @@ public class DeliveryService implements Idao<Delivery, Long> {
     public List<Delivery> findAll() {
         return this.deliveryRepository.findAll();
     }
+
+    public List<Delivery> findByDeliveryId(Long deliveryId) {
+        return this.deliveryRepository.findByDomiciliaryId(deliveryId);
+    }
 }

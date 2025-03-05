@@ -80,6 +80,26 @@ public class DeliveryBusiness {
         }
     }
 
+    public void changeStatus(Map<String, Object> data, Long id) {
+        try{
+            Delivery delivery = deliveryService.findBy(id);
+            //Pass Map to JSONObject
+            JSONObject request = Util.getData(data);
+
+            if (delivery == null) {
+                throw new CustomException("Delivery not found", HttpStatus.NOT_FOUND);
+            }
+
+            delivery.setDeliveryState(request.getString("state"));
+            deliveryService.save(delivery);
+
+        } catch (Exception e) {
+            throw new CustomException("Error getting Delivery: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     public DeliveryDTO findBy(Long id) {
         try {
             Delivery delivery = this.deliveryService.findBy(id);
@@ -110,7 +130,7 @@ public class DeliveryBusiness {
             validateOrderState(order); // Nueva validación de estado de orden
 
             // 4. Configuración de la entrega
-            delivery.setUser(domiciliary);
+            delivery.setDomiciliary(domiciliary);
             delivery.setOrder(order);
             delivery.setDeliveryState("PENDING"); // Estado inicial consistente con frontend
 
@@ -163,6 +183,31 @@ public class DeliveryBusiness {
 
 
     }
+    public List<DeliveryDTO> findByDeliveryId(Long deliveryId) {
+        try {
+
+            // Manejar User manualmente
+            List<Delivery> deliveryList = deliveryService.findByDeliveryId(deliveryId);
+            if (deliveryList == null) {
+                throw new CustomException("deliveries not found", HttpStatus.NOT_FOUND);
+            }
+
+            // Guardar la entrega actualizada
+            return deliveryList.stream()
+                    .map(delivery -> modelMapper.map(delivery, DeliveryDTO.class))
+                    .collect(Collectors.toList());
+
+        } catch (CustomException ce) {
+            // Log de error personalizado y relanzamiento de la excepción
+            logger.error("Custom error: {}", ce.getMessage(), ce);
+            throw new CustomException("Error updating delivery", HttpStatus.INTERNAL_SERVER_ERROR);
+
+        } catch (Exception e) {
+            // Log de error inesperado y relanzamiento de la excepción
+            logger.error("Unexpected error occurred while updating delivery", e);
+            throw new RuntimeException("Unexpected error occurred while updating delivery", e);
+        }
+    }
 
     public void update(Map<String, Object> request, Long id) {
         try {
@@ -179,7 +224,7 @@ public class DeliveryBusiness {
                 throw new CustomException("User not found", HttpStatus.NOT_FOUND);
             }
             user.setIndividual(user.getIndividual());
-            delivery.setUser(user);
+            delivery.setDomiciliary(user);
 
             // Manejar Order manualmente
             Order order = orderService.findBy(deliveryDTO.getOrder().getId());

@@ -52,7 +52,7 @@ public class User {
     @Column(name = "credentials_no_expired")
     private boolean credentialsNoExpired;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "domiciliary")
     private Delivery delivery;
 
     @OneToOne(cascade = CascadeType.ALL)

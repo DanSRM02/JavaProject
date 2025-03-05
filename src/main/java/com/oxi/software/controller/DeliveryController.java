@@ -70,6 +70,53 @@ public class DeliveryController {
         }
     }
 
+    @GetMapping("/domiciliary/{domiciliaryId}")
+    public ResponseEntity<Map<String, Object>> getDeliveriesByDomiciliary(@PathVariable Long domiciliaryId) {
+        try{
+            List<DeliveryDTO> deliveryDTOSList = deliveryBusiness.findByDeliveryId(domiciliaryId);
+            if (!deliveryDTOSList.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        deliveryDTOSList,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        deliveryDTOSList.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Deliveries not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
+        } catch (Exception e){
+            throw new CustomException("Error getting deliveries: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
+        }
+    }
+
+    @PostMapping("/toggler/{id}")
+    public ResponseEntity<Map<String, Object>> toggleProduct(@RequestBody Map<String, Object> delivery , @PathVariable("id") Long id) {
+        try {
+            // Call Business to update Product
+            deliveryBusiness.changeStatus(delivery, id);
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Delivery updated successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error updating Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     @GetMapping("/all")
     public ResponseEntity<Map<String, Object>> getAllDeliverys() {
         try{

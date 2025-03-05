@@ -29,7 +29,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
   JOIN o.user u
   JOIN u.individual i
   LEFT JOIN o.delivery d
-  LEFT JOIN d.user du
+  LEFT JOIN d.domiciliary du
   LEFT JOIN du.individual di
   WHERE o.state =:state
   ORDER BY o.id ASC   \s

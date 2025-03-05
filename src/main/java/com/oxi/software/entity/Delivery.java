@@ -41,7 +41,7 @@ public class Delivery {
     // Relation with Delivery man
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinColumn(name = "fk_id_domiciliary", referencedColumnName = "user_id")
-    private User user;
+    private User domiciliary;
 
 }
 
