@@ -73,7 +73,7 @@ public class DeliveryController {
     @GetMapping("/domiciliary/{domiciliaryId}")
     public ResponseEntity<Map<String, Object>> getDeliveriesByDomiciliary(@PathVariable Long domiciliaryId) {
         try{
-            List<DeliveryDTO> deliveryDTOSList = deliveryBusiness.findByDeliveryId(domiciliaryId);
+            List<DeliveryDTO> deliveryDTOSList = deliveryBusiness.findDeliveryById(domiciliaryId);
             if (!deliveryDTOSList.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         deliveryDTOSList,

@@ -89,7 +89,7 @@ public class OrderBusiness {
 
         orderDTO.setOrderLines(orderLines);
 
-        // Inicialmente el total se asigna en 0, se calculará en el method add
+        // Inicialmente, el total se asigna en 0, se calculará en el method add
         orderDTO.setTotal(0.0);
 
         logger.debug("OrderDTO after validation: {}", orderDTO);
@@ -212,13 +212,9 @@ public class OrderBusiness {
             //Pass Map to JSONObject
             JSONObject request = Util.getData(data);
 
-            System.out.println(request);
-
             if (order == null) {
                 throw new CustomException("Order not found", HttpStatus.NOT_FOUND);
             }
-
-
 
             order.setState(request.getString("state"));
             orderService.save(order);
@@ -242,6 +238,23 @@ public class OrderBusiness {
                     .map(order -> modelMapper.map(order, OrderDTO.class))
                     .collect(Collectors.toList());
         } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<OrderSummaryDTO>findAllOrderByDomiciliaryId(Long domiciliaryId){
+        try{
+            if (domiciliaryId == null) {
+                throw new CustomException("user id must be not null", HttpStatus.BAD_REQUEST);
+            }
+            List<Order> orderList = orderService.getOrdersByUser(domiciliaryId);
+            if (orderList.isEmpty()) {
+                return List.of();
+            }
+            return orderList.stream()
+                    .map(order -> modelMapper.map(order, OrderSummaryDTO.class))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

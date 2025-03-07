@@ -44,8 +44,8 @@ public class IndividualBusiness {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         long documentValue = request.getLong("document");
-        String hashedDocument = passwordEncoder.encode(Long.toString(documentValue));
-        individualDTO.setDocument(hashedDocument);
+        String stringDocument = Long.toString(documentValue);
+        individualDTO.setDocument(stringDocument);
 
         //Assign data to DTO
         individualDTO.setId(0L);

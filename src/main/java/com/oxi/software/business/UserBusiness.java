@@ -2,6 +2,7 @@ package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
 import com.oxi.software.entity.Individual;
+import com.oxi.software.entity.Order;
 import com.oxi.software.entity.RolType;
 import com.oxi.software.entity.User;
 import com.oxi.software.repository.projection.DeliveryProjection;
@@ -97,6 +98,25 @@ public class UserBusiness {
             throw new RuntimeException("Unexpected error occurred while adding user", e);
         }
     }
+
+    public void changeStatus(Map<String, Object> data, Long id) {
+        try{
+            User user = userService.findBy(id);
+            JSONObject request = Util.getData(data);
+
+            if (user == null) {
+                throw new CustomException("User not found", HttpStatus.NOT_FOUND);
+            }
+
+            user.setState(request.getBoolean("state"));
+            userService.save(user);
+
+        } catch (Exception e) {
+            throw new CustomException("Error getting Order: " + e.getMessage(),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     public List<UserDTO> findAll(){
         try {

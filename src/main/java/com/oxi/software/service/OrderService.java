@@ -53,8 +53,6 @@ public class OrderService implements Idao<Order, Long> {
         return this.orderRepository.findOrderDetailsById(id);
     }
     public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUserId(userId);
+        return this.orderRepository.findByUserId(userId);
     }
-
-
 }

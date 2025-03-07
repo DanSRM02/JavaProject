@@ -3,6 +3,7 @@ package com.oxi.software.business;
 import com.oxi.software.dto.*;
 import com.oxi.software.entity.User;
 import com.oxi.software.service.AuthService;
+import com.oxi.software.service.UserService;
 import com.oxi.software.utilities.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.security.JwtTokenProvider;
@@ -18,7 +19,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,13 +35,15 @@ public class AuthBusiness  {
 
     // Valor por defecto en caso de que no se envíe rol (por ejemplo, rol de cliente)
     private static final Long DEFAULT_ROL_TYPE_ID = 2L;
+    private final UserService userService;
 
-    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder) {
+    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder, UserService userService) {
         this.individualBusiness = individualBusiness;
         this.userBusiness = userBusiness;
         this.authService = authService;
         this.jwtTokenProvider = jwtTokenProvider;
         this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     private AuthDTO validateData(Map<String, Object> request){
@@ -52,6 +54,21 @@ public class AuthBusiness  {
         return authDTO;
     }
 
+    public void changePassword(Map<String, Object> request, Long id){
+        AuthDTO authDTO = validateData(request);
+
+        User user = userService.findBy(id);
+
+        if (user == null) {
+            throw new BadCredentialsException("User not found");
+        }
+
+        user.setUsername(authDTO.getUsername());
+        user.setPassword(passwordEncoder.encode(authDTO.getPassword()));
+
+        userService.save(user);
+    }
+
     @Transactional
     public void register(Map<String, Object> request) {
         // 1. Crear Individual y obtener su DTO
@@ -60,7 +77,7 @@ public class AuthBusiness  {
         // 2. Construir el UserDTO a partir del IndividualDTO
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(individualDTO.getEmail());
-        userDTO.setPassword(individualDTO.getDocument()); // documento ya hasheado
+        userDTO.setPassword(passwordEncoder.encode(individualDTO.getDocument())); // documento ya hasheado
         userDTO.setState(true);
 
         // 3. Extraer el rol enviado en el request

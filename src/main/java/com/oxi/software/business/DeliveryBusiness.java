@@ -183,11 +183,11 @@ public class DeliveryBusiness {
 
 
     }
-    public List<DeliveryDTO> findByDeliveryId(Long deliveryId) {
+    public List<DeliveryDTO> findDeliveryById(Long deliveryId) {
         try {
 
             // Manejar User manualmente
-            List<Delivery> deliveryList = deliveryService.findByDeliveryId(deliveryId);
+            List<Delivery> deliveryList = deliveryService.findDeliveryById(deliveryId);
             if (deliveryList == null) {
                 throw new CustomException("deliveries not found", HttpStatus.NOT_FOUND);
             }

@@ -75,4 +75,26 @@ public class AuthController {
                     HttpStatus.BAD_REQUEST);
         }
     }
+
+    @PostMapping(path = "/change-password/{id}")
+    public ResponseEntity<Map<String, Object>> changePassword(@RequestBody Map<String, Object> json, @PathVariable Long id) {
+        try{
+            // Call Business to add User
+            authBusiness.changePassword(json, id);
+            // Success response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Individual registered successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        } catch (CustomException e) {
+            // Custom exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // General exception response
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error registered individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
 }
