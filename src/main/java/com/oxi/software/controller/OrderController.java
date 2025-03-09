@@ -3,10 +3,9 @@ package com.oxi.software.controller;
 import com.oxi.software.business.OrderBusiness;
 import com.oxi.software.dto.OrderDTO;
 import com.oxi.software.dto.OrderDetailDTO;
-import com.oxi.software.dto.OrderSummaryDTO;
+import com.oxi.software.dto.KanbanOrderDTO;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -111,12 +110,21 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> getAllOrders() {
         try {
             List<OrderDTO> orderDTOList = orderBusiness.findAll();
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                    orderDTOList,
-                    HttpStatus.OK,
-                    "Successfully Completed",
-                    orderDTOList.size()),
-                    HttpStatus.OK);
+            if (!orderDTOList.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        orderDTOList,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        orderDTOList.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Orders not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error getting orders: " + e.getMessage(), HttpStatus.BAD_REQUEST),
@@ -124,16 +132,25 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/state/{state}")
-    public ResponseEntity<Map<String, Object>> getAllOrdersByState(@PathVariable String state) {
+    @GetMapping("/kanban")
+    public ResponseEntity<Map<String, Object>> getAllKanbanOrders() {
         try {
-            List<OrderSummaryDTO> orderSummaryDTOS = orderBusiness.findAllByState(state);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                    orderSummaryDTOS,
-                    HttpStatus.OK,
-                    "Successfully Completed",
-                    orderSummaryDTOS.size()),
-                    HttpStatus.OK);
+            List<KanbanOrderDTO> orderSummaryDTOS = orderBusiness.findAllKanbanOrders();
+            if (!orderSummaryDTOS.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        orderSummaryDTOS,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        orderSummaryDTOS.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Orders not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error getting orders: " + e.getMessage(), HttpStatus.BAD_REQUEST),
@@ -167,12 +184,21 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable Long orderId) {
         try {
             List<OrderDetailDTO> orderDetailDTOS = orderBusiness.findDetailsById(orderId);
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
-                    orderDetailDTOS,
-                    HttpStatus.OK,
-                    "Successfully Completed",
-                    orderDetailDTOS.size()),
-                    HttpStatus.OK);
+            if (!orderDetailDTOS.isEmpty()) {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        orderDetailDTOS,
+                        HttpStatus.OK,
+                        "Successfully Completed",
+                        orderDetailDTOS.size()),
+                        HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
+                        null,
+                        HttpStatus.NO_CONTENT,
+                        "Orders not found",
+                        0),
+                        HttpStatus.ACCEPTED);
+            }
         } catch (Exception e) {
             return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
                     "Error getting order details: " + e.getMessage(), HttpStatus.BAD_REQUEST),

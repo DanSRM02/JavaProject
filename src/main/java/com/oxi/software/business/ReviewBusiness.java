@@ -11,7 +11,7 @@ import com.oxi.software.repository.projection.ReviewListProjection;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.ReviewService;
 import com.oxi.software.service.UserService;
-import com.oxi.software.utilities.Util;
+import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.oxi.software.utilities.Util.getData;
+import static com.oxi.software.utilities.types.Util.getData;
 
 @Component
 public class ReviewBusiness {

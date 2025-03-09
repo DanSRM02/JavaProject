@@ -2,6 +2,7 @@ package com.oxi.software.service;
 
 import com.oxi.software.entity.Product;
 import com.oxi.software.repository.ProductRepository;
+import com.oxi.software.repository.projection.ProductDetailProjection;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductService implements Idao<Product, Long> {
@@ -41,5 +43,9 @@ public class ProductService implements Idao<Product, Long> {
     @Override
     public List<Product> findAll() {
         return this.productRepository.findAll();
+    }
+
+    public List<ProductDetailProjection> findProductDetailsByProductId(Set<Long> ordersId) {
+        return this.productRepository.findProductsByOrderIds(ordersId);
     }
 }

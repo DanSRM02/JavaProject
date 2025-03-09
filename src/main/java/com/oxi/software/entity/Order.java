@@ -19,18 +19,21 @@ import java.util.List;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
 
     @Column(name = "state", length = 20)
-    private String state;  // PENDING, PRIORITIZED, COMPLETED, etc.
+    private String state;
 
     @Column(name = "priority")
     private Boolean priority;
 
     @Column(name = "total")
     private Double total;
+
+    @Column(name = "large_delivery")
+    private Boolean largeDelivery;
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -42,16 +45,25 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
 
-    //relations / DONE
+    // Relación con Deliveries (1 Order → N Deliveries)
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    private List<Delivery> deliveries = new ArrayList<>();
 
-    @OneToOne(mappedBy = "order")
-    private Delivery delivery;
-
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
-    @JoinColumn (name = "fk_id_user")
+    // Relación con User (cliente)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fk_id_user")
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(
+            mappedBy = "order",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
     private List<OrderLine> orderLines = new ArrayList<>();
-
 }

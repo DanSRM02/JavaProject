@@ -1,4 +1,4 @@
-package com.oxi.software.utilities.config.seeders;
+package com.oxi.software.utilities.seeders;
 
 import com.oxi.software.entity.*;
 import com.oxi.software.repository.*;

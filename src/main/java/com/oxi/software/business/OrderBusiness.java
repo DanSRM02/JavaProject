@@ -2,13 +2,13 @@ package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
 import com.oxi.software.entity.*;
+import com.oxi.software.repository.projection.KanbanOrderProjection;
 import com.oxi.software.repository.projection.OrderDetailsProjection;
-import com.oxi.software.repository.projection.OrderSummaryProjection;
 import com.oxi.software.service.OrderService;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.ProductVariantService;
 import com.oxi.software.service.UserService;
-import com.oxi.software.utilities.Util;
+import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -109,6 +109,24 @@ public class OrderBusiness {
             order.setState("PENDING");
             order.setPriority(false);
 
+            User client = userService.findBy(orderDTO.getUser().getId());
+            boolean isEnterprise = "EMPRESA".equals(client.getIndividual().getIndividualType());
+
+            // 3.2 Calcular total de cilindros
+            int totalCylinders = orderDTO.getOrderLines().stream()
+                    .mapToInt(OrderLineDTO::getQuantity)
+                    .sum();
+
+            // 3.3 Aplicar reglas de prioridad y entrega grande
+            boolean autoPriority = isEnterprise || totalCylinders > 10;
+            order.setPriority(autoPriority);
+            order.setLargeDelivery(autoPriority); // Nuevo campo en la entidad Order
+
+            // 3.4 Cambiar estado si es prioritario
+            if (autoPriority) {
+                order.setState("PRIORITIZED");
+            }
+
             // 3. Inicializar total en 0
             double total = 0.0;
 
@@ -173,14 +191,14 @@ public class OrderBusiness {
     }
 
 
-    public List<OrderSummaryDTO> findAllByState(String state) {
+    public List<KanbanOrderDTO> findAllKanbanOrders() {
         try {
-            List<OrderSummaryProjection> orderList = orderService.findAllByState(state);
+            List<KanbanOrderProjection> orderList = orderService.findAllKanbanOrders();
             if (orderList.isEmpty()) {
                 return List.of();
             }
             return orderList.stream()
-                    .map(order -> modelMapper.map(order, OrderSummaryDTO.class))
+                    .map(order -> modelMapper.map(order, KanbanOrderDTO.class))
                     .collect(Collectors.toList());
         } catch (Exception e) {
             throw new CustomException("Error al obtener órdenes por estado: " + e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -238,23 +256,6 @@ public class OrderBusiness {
                     .map(order -> modelMapper.map(order, OrderDTO.class))
                     .collect(Collectors.toList());
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public List<OrderSummaryDTO>findAllOrderByDomiciliaryId(Long domiciliaryId){
-        try{
-            if (domiciliaryId == null) {
-                throw new CustomException("user id must be not null", HttpStatus.BAD_REQUEST);
-            }
-            List<Order> orderList = orderService.getOrdersByUser(domiciliaryId);
-            if (orderList.isEmpty()) {
-                return List.of();
-            }
-            return orderList.stream()
-                    .map(order -> modelMapper.map(order, OrderSummaryDTO.class))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

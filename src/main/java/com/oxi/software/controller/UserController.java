@@ -46,6 +46,20 @@ public class UserController {
                     HttpStatus.BAD_REQUEST);
         }
     }
+    @PutMapping(path = "/{id}/new-address")
+    public ResponseEntity<Map<String, Object>> updateAddress(@RequestBody Map<String, Object> json, @PathVariable Long id) {
+        try{
+            userBusiness.assignAddress(json, id);
+
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "New Address created successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        }catch (Exception e){
+            throw new CustomException("Error getting individuals: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
+        }
+    }
+
     @GetMapping("/deliveries/active")
     public ResponseEntity<Map<String, Object>> findActiveDeliveries() {
         try{

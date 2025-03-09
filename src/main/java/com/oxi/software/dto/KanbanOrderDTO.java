@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderSummaryDTO   {
+public class KanbanOrderDTO {
 
     private Long id;
     @JsonProperty("order_state")

@@ -50,7 +50,7 @@ public class ResponseHttpApi {
     public static Map<String, Object> responseHttpFindId(Object data, String code,String msm) {
         Map<String, Object> response = responseHttpAction(code, msm);
 
-        response.put("data",data);
+        response.put("code",code);response.put("data",data);
         return response;
     }
 

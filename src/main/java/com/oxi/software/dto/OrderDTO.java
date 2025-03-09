@@ -1,5 +1,6 @@
 package com.oxi.software.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -19,6 +20,8 @@ public class OrderDTO {
     private Double total;
     private UserDTO user;
     private List<OrderLineDTO> orderLines = new ArrayList<>();
+    @JsonProperty("large_delivery")
+    private Boolean largeDelivery;
     private Date createdAt;
 
 }

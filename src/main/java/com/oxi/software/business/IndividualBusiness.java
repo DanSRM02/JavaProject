@@ -5,7 +5,7 @@ import com.oxi.software.entity.*;
 import com.oxi.software.service.DocumentTypeService;
 import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.IndividualTypeService;
-import com.oxi.software.utilities.Util;
+import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
 import org.apache.logging.log4j.LogManager;
@@ -50,7 +50,6 @@ public class IndividualBusiness {
         //Assign data to DTO
         individualDTO.setId(0L);
         individualDTO.setName(request.getString("name"));
-        individualDTO.setAddress(request.getString("address"));
         individualDTO.setPhone(request.getString("phone"));
         individualDTO.setEmail(request.getString("email"));
 

@@ -2,6 +2,8 @@ package com.oxi.software.controller;
 
 import com.oxi.software.business.DeliveryBusiness;
 import com.oxi.software.dto.DeliveryDTO;
+import com.oxi.software.dto.DeliveryDetailsDTO;
+import com.oxi.software.dto.google.DeliveryResponse;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.http.ResponseHttpApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "/api/v1/oxi/delivery", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
+@RequestMapping(path = "/api/v1/oxi/delivery", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.PATCH})
 @CrossOrigin(origins = "*")
 public class DeliveryController {
 
@@ -73,7 +75,7 @@ public class DeliveryController {
     @GetMapping("/domiciliary/{domiciliaryId}")
     public ResponseEntity<Map<String, Object>> getDeliveriesByDomiciliary(@PathVariable Long domiciliaryId) {
         try{
-            List<DeliveryDTO> deliveryDTOSList = deliveryBusiness.findDeliveryById(domiciliaryId);
+            List<DeliveryDetailsDTO> deliveryDTOSList = deliveryBusiness.findDeliveryById(domiciliaryId);
             if (!deliveryDTOSList.isEmpty()) {
                 return new ResponseEntity<>(ResponseHttpApi.responseHttpFindAll(
                         deliveryDTOSList,
@@ -95,25 +97,14 @@ public class DeliveryController {
         }
     }
 
-    @PostMapping("/toggler/{id}")
-    public ResponseEntity<Map<String, Object>> toggleProduct(@RequestBody Map<String, Object> delivery , @PathVariable("id") Long id) {
-        try {
-            // Call Business to update Product
-            deliveryBusiness.changeStatus(delivery, id);
-            // Success response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Delivery updated successfully", HttpStatus.OK),
-                    HttpStatus.OK);
-        } catch (CustomException e) {
-            // Custom exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
-        } catch (Exception e) {
-            // General exception response
-            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
-                    "Error updating Delivery: " + e.getMessage(), HttpStatus.BAD_REQUEST),
-                    HttpStatus.BAD_REQUEST);
+    @PatchMapping("/{id}/start-delivery")
+    public ResponseEntity<Map<String, Object>> startDelivery(@PathVariable Long id, @RequestBody Map<String, Object> productMap) {
+        try{
+            DeliveryResponse deliveryResponse = deliveryBusiness.startDelivery(id, productMap);
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(deliveryResponse, ResponseHttpApi.CODE_OK, ""), HttpStatus.OK);
+        }catch (Exception e){
+            throw new CustomException("Error starting delivery: " + e.getMessage(),
+                    HttpStatus.CONFLICT);
         }
     }
 

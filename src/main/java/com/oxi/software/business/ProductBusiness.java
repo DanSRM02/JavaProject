@@ -6,7 +6,7 @@ import com.oxi.software.entity.Product;
 import com.oxi.software.entity.Unit;
 import com.oxi.software.service.ProductService;
 import com.oxi.software.service.UnitService;
-import com.oxi.software.utilities.Util;
+import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

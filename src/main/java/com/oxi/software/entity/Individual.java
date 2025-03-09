@@ -1,11 +1,17 @@
 package com.oxi.software.entity;
 
+import com.oxi.software.service.GeocodingService;
+import com.oxi.software.utilities.GeocodingServiceInjector;
+import com.oxi.software.utilities.exception.GeocodingException;
+import com.oxi.software.utilities.types.GeoLocation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Setter
 @Getter
@@ -30,6 +36,10 @@ public class Individual {
     @Column (name = "phone", length = 20)
     private String phone;
 
+    @ElementCollection
+    @CollectionTable(name = "fixed_locations", joinColumns = @JoinColumn(name = "individual_id"))
+    private List<GeoLocation> fixedLocations = new ArrayList<>();
+
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at",updatable = false)
@@ -52,5 +62,21 @@ public class Individual {
     @JoinColumn(name = "fk_id_document_type")
     private DocumentType documentType;
 
+    @Transient
+    public GeoLocation toGeoLocation() {
+        if (this.address == null || this.address.isBlank()) {
+            throw new GeocodingException("Dirección no proporcionada", address);
+        }
 
+        try {
+            return GeocodingServiceInjector.getGeocodingService()
+                    .convertAddressToCoordinates(this.address);
+        } catch (GeocodingException e) {
+            // loguear error y devolver última ubicación fija como fallback
+            if (!fixedLocations.isEmpty()) {
+                return fixedLocations.get(fixedLocations.size() - 1);
+            }
+            throw new GeocodingException("Error en geocodificación y sin ubicaciones de respaldo", address);
+        }
+    }
 }

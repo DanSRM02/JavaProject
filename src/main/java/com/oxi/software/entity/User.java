@@ -52,8 +52,8 @@ public class User {
     @Column(name = "credentials_no_expired")
     private boolean credentialsNoExpired;
 
-    @OneToOne(mappedBy = "domiciliary")
-    private Delivery delivery;
+    @OneToMany(mappedBy = "domiciliary")
+    private List<Delivery> delivery;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "fk_id_individual")

@@ -2,7 +2,7 @@ package com.oxi.software.service;
 
 import com.oxi.software.entity.Delivery;
 import com.oxi.software.repository.DeliveryRepository;
-import com.oxi.software.repository.projection.OrderSummaryProjection;
+import com.oxi.software.repository.projection.DeliveryBasicProjection;
 import com.oxi.software.service.dao.Idao;
 import com.oxi.software.utilities.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ public class DeliveryService implements Idao<Delivery, Long> {
     @Override
     public Delivery findBy(Long id) {
         return this.deliveryRepository.findById(id).orElseThrow(()->
-                new CustomException("Document type with id " + id + " not found", HttpStatus.NO_CONTENT));
+                new CustomException("Delivery with id " + id + " not found", HttpStatus.NO_CONTENT));
     }
 
     @Override
@@ -44,7 +44,9 @@ public class DeliveryService implements Idao<Delivery, Long> {
         return this.deliveryRepository.findAll();
     }
 
-    public List<Delivery> findDeliveryById(Long deliveryId) {
-        return this.deliveryRepository.findDeliveryById(deliveryId);
+    public List<DeliveryBasicProjection> findDeliveryDetails(Long deliveryId) {
+        return this.deliveryRepository.findDeliveriesByDomiciliary(deliveryId);
         }
+
+
 }
