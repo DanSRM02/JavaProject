@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        .header { color: #2c3e50; }
+        .content { margin: 20px 0; }
+    </style>
+</head>
+<body>
+<h1 class="header">¡Tu pedido está en camino! 🚚</h1>
+<div class="content">
+    <p>Hola <span th:text="${clientName}">Usuario</span>,</p>
+    <p>Detalles de tu entrega:</p>
+    <ul>
+        <li>Número de orden: <strong th:text="${orderId}">#123</strong></li>
+        <li>Domiciliario: <span th:text="${domiciliaryName}">Juan Pérez</span></li>
+        <li>Hora estimada: <span th:text="${estimatedTime}">15:00</span></li>
+    </ul>
+</div>
+</body>
+</html>
