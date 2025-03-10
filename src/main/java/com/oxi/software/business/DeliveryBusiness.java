@@ -228,12 +228,17 @@ public class DeliveryBusiness {
 
     private void validateOrderState(Order order) {
         if (order == null) {
-            throw new CustomException("Orden no encontrada",
-                    HttpStatus.NOT_FOUND);
+            throw new CustomException("Orden no encontrada", HttpStatus.NOT_FOUND);
         }
-        if ("APPROVED".equals(order.getState()) || "PRIORITIZED".equals(order.getState())) {
-            throw new CustomException("La orden no está en estado aprobado",
-                    HttpStatus.CONFLICT);
+
+        String state = order.getState();
+        boolean isValidState = "APPROVED".equals(state) || "PRIORITY".equals(state); // Asumiendo que el estado prioritario se llama "PRIORITY"
+
+        if (!isValidState) {
+            throw new CustomException(
+                    "La orden debe estar en estado APROBADA o PRIORITARIA para esta acción. Estado actual: " + state,
+                    HttpStatus.CONFLICT
+            );
         }
     }
 
