@@ -76,6 +76,30 @@ public class AuthController {
         }
     }
 
+    @GetMapping(path = "/has-address/{id}")
+    public ResponseEntity<Map<String, Object>> hasAddress(@PathVariable("id") Long id) {
+        {
+            try{
+                // Call Business to add User
+                boolean hassledAddress = authBusiness.hasAddress(id);
+                // Success response
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpFindId(hassledAddress,
+                        "Individual registered successfully", String.valueOf(HttpStatus.OK)),
+                        HttpStatus.OK);
+            } catch (CustomException e) {
+                // Custom exception response
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                        e.getMessage(), HttpStatus.BAD_REQUEST),
+                        HttpStatus.BAD_REQUEST);
+            } catch (Exception e) {
+                // General exception response
+                return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                        "Error registered individual: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
+
     @PostMapping(path = "/change-password/{id}")
     public ResponseEntity<Map<String, Object>> changePassword(@RequestBody Map<String, Object> json, @PathVariable Long id) {
         try{

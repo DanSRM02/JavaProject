@@ -42,4 +42,8 @@ public class IndividualService implements Idao<Individual, Long> {
     public List<Individual> findAll() {
         return this.individualRepository.findAll();
     }
+
+    public boolean hasAddress(Long id) {
+        return this.individualRepository.existsById(id);
+    }
 }

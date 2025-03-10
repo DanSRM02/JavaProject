@@ -1,12 +1,15 @@
 package com.oxi.software.business;
 
 import com.oxi.software.dto.*;
+import com.oxi.software.entity.Individual;
 import com.oxi.software.entity.User;
 import com.oxi.software.service.AuthService;
+import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.UserService;
 import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import com.oxi.software.utilities.security.JwtTokenProvider;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -36,7 +39,7 @@ public class AuthBusiness  {
     private static final Long DEFAULT_ROL_TYPE_ID = 2L;
     private final UserService userService;
 
-    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder, UserService userService) {
+    public AuthBusiness(IndividualBusiness individualBusiness, UserBusiness userBusiness, AuthService authService, JwtTokenProvider jwtTokenProvider, PasswordEncoder passwordEncoder, UserService userService, IndividualService individualService) {
         this.individualBusiness = individualBusiness;
         this.userBusiness = userBusiness;
         this.authService = authService;
@@ -51,6 +54,11 @@ public class AuthBusiness  {
         authDTO.setUsername(data.getString("username"));
         authDTO.setPassword(data.getString("password"));
         return authDTO;
+    }
+
+    public boolean hasAddress(Long id) {
+        User user = userService.findBy(id);
+        return user.getIndividual().getAddress() != null && !user.getIndividual().getAddress().trim().isEmpty();
     }
 
     public void changePassword(Map<String, Object> request, Long id){

@@ -76,6 +76,16 @@ public class ReviewBusiness {
         }
     }
 
+    public void deactivate(Long id) {
+        try{
+            Review review = reviewService.findBy(id);
+            review.setState(false);
+            reviewService.save(review);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // Actualizar una reseña existente
     public void update(Map<String, Object> request, Long id) {
         try {

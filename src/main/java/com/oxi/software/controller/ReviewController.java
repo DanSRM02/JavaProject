@@ -97,6 +97,28 @@ public class ReviewController {
         }
     }
 
+    @PostMapping(path = "/deactivate/{id}")
+    public ResponseEntity<Map<String, Object>> deactivateReview( @PathVariable Long id) {
+        try {
+            // Llamar al negocio para actualizar la reseña
+            reviewBusiness.deactivate(id);
+            // Respuesta de éxito
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Review updated successfully", HttpStatus.OK),
+                    HttpStatus.OK);
+        } catch (CustomException e) {
+            // Respuesta para excepciones personalizadas
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            // Respuesta para excepciones generales
+            return new ResponseEntity<>(ResponseHttpApi.responseHttpPost(
+                    "Error deactivate review: " + e.getMessage(), HttpStatus.BAD_REQUEST),
+                    HttpStatus.BAD_REQUEST);
+        }
+    }
+
     // Obtener reseña por ID
     @GetMapping("/find/{id}")
     public ResponseEntity<Map<String, Object>> getReviewById(@PathVariable Long id) {

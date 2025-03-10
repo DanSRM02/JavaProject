@@ -231,7 +231,7 @@ public class DeliveryBusiness {
             throw new CustomException("Orden no encontrada",
                     HttpStatus.NOT_FOUND);
         }
-        if (!"APPROVED".equals(order.getState())) {
+        if ("APPROVED".equals(order.getState()) || "PRIORITIZED".equals(order.getState())) {
             throw new CustomException("La orden no está en estado aprobado",
                     HttpStatus.CONFLICT);
         }
