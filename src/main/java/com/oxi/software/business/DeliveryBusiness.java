@@ -10,7 +10,7 @@ import com.oxi.software.repository.projection.DeliveryBasicProjection;
 import com.oxi.software.repository.projection.ProductDetailProjection;
 import com.oxi.software.service.*;
 import com.oxi.software.utilities.exception.GeocodingException;
-import com.oxi.software.utilities.types.GeoLocation;
+import com.oxi.software.dto.google.GeoLocation;
 import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,7 +21,6 @@ import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.validation.ObjectError;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -40,7 +39,7 @@ public class DeliveryBusiness {
     private final ModelMapper modelMapper = new ModelMapper();
     private final ProductService productService;
 
-    public DeliveryBusiness(DeliveryService deliveryService, OrderService orderService, UserService userService, NotificationService notificationService, Util util, RouteOptimizationService routeOptimizationService, ProductService productService) {
+    public DeliveryBusiness(DeliveryService deliveryService, RouteOptimizationService routeOptimizationService,OrderService orderService, UserService userService, NotificationService notificationService, Util util, ProductService productService) {
         this.deliveryService = deliveryService;
         this.orderService = orderService;
         this.userService = userService;

@@ -1,4 +1,4 @@
-package com.oxi.software.utilities.types;
+package com.oxi.software.dto.google;
 
 import jakarta.persistence.Embeddable;
 import lombok.*;

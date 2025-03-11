@@ -8,7 +8,7 @@ import com.oxi.software.repository.projection.DeliveryProjection;
 import com.oxi.software.service.IndividualService;
 import com.oxi.software.service.RolTypeService;
 import com.oxi.software.service.UserService;
-import com.oxi.software.utilities.types.GeoLocation;
+import com.oxi.software.dto.google.GeoLocation;
 import com.oxi.software.utilities.types.Util;
 import com.oxi.software.utilities.exception.CustomException;
 import jakarta.persistence.EntityNotFoundException;

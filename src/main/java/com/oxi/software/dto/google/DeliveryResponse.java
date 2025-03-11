@@ -1,6 +1,5 @@
 package com.oxi.software.dto.google;
 
-import com.oxi.software.utilities.types.GeoLocation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,9 +1,9 @@
 package com.oxi.software.entity;
 
-import com.oxi.software.service.GeocodingService;
+
 import com.oxi.software.utilities.GeocodingServiceInjector;
 import com.oxi.software.utilities.exception.GeocodingException;
-import com.oxi.software.utilities.types.GeoLocation;
+import com.oxi.software.dto.google.GeoLocation;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
